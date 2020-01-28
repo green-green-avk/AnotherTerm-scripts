@@ -70,10 +70,19 @@ chmod 755 etc/proot/run
 ln -snf root/etc/proot/run ../run
 echo 'Configuring...'
 cat << EOF > etc/resolv.conf
-search local
-nameserver 192.168.0.1
-nameserver 208.67.220.220
-nameserver 208.67.222.222
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+EOF
+cat << EOF > etc/profile.d/locale.sh
+if [ -f /etc/default/locale ]
+then
+. /etc/default/locale
+export LANG
+fi
+EOF
+cat << EOF > etc/profile.d/ps.sh
+PS1='\[\e[32m\]\u\[\e[33m\]@\[\e[32m\]\h\[\e[33m\]:\[\e[32m\]\w\[\e[33m\]\\$\[\e[0m\] '
+PS2='\[\e[33m\]>\[\e[0m\] '
 EOF
 echo 'Creating favorite...'
 "$TERMSH" view -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
