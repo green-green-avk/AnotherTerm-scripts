@@ -9,6 +9,7 @@ NAME=linuxcontainers-deb
 ROOTFS_DIR="$PROOTS/$NAME"
 ARCH=$(uname -m) # Possibly there is no uname on old Androids.
 MINITAR="$DATA_DIR/minitar"
+REGULAR_USER_NAME=my_acct
 
 export TMPDIR="$DATA_DIR/tmp"
 mkdir -p "$TMPDIR"
@@ -67,7 +68,9 @@ echo 'Getting Debian...'
 | "$MINITAR"
 echo 'Setting up run script...'
 mkdir -p etc/proot
-"$TERMSH" cat https://github.com/green-green-avk/proot/raw/master/doc/usage/android/start-script-example > etc/proot/run
+"$TERMSH" cat \
+'https://github.com/green-green-avk/proot/raw/master/doc/usage/android/start-script-example' \
+> etc/proot/run
 chmod 755 etc/proot/run
 ln -snf root/etc/proot/run ../run
 echo 'Configuring...'
@@ -75,6 +78,11 @@ cat << EOF > etc/resolv.conf
 nameserver 8.8.8.8
 nameserver 8.8.4.4
 EOF
+# We have no adduser or useradd here...
+cp -a etc/skel home/$REGULAR_USER_NAME
+echo \
+"$REGULAR_USER_NAME:x:$USER_ID:$USER_ID:guest:/home/$REGULAR_USER_NAME:/bin/bash" \
+>> etc/passwd
 cat << EOF > etc/profile.d/locale.sh
 if [ -f /etc/default/locale ]
 then
@@ -87,7 +95,9 @@ PS1='\[\e[32m\]\u\[\e[33m\]@\[\e[32m\]\h\[\e[33m\]:\[\e[32m\]\w\[\e[33m\]\\$\[\e
 PS2='\[\e[33m\]>\[\e[0m\] '
 EOF
 echo 'Creating favorite...'
-"$TERMSH" view -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
+"$TERMSH" view -N -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
 -u "local_terminal:/opts?execute=%24DATA_DIR%2F${ROOTFS_DIR/\//%2F}%2Frun%200%3A0&name=$NAME%20(root)"
-echo 'Done'
+"$TERMSH" view -N -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
+-u "local_terminal:/opts?execute=%24DATA_DIR%2F${ROOTFS_DIR/\//%2F}%2Frun&name=$NAME"
+echo 'Done, see notifications.'
 )
