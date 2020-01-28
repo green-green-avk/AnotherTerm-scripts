@@ -2,6 +2,8 @@
 
 # Debian Buster from linuxcontainers.org install script.
 
+set -e
+
 PROOTS=proots
 NAME=linuxcontainers-deb
 ROOTFS_DIR="$PROOTS/$NAME"
