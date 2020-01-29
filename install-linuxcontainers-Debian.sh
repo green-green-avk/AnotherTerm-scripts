@@ -8,7 +8,7 @@ PROOTS=proots
 NAME=linuxcontainers-deb
 ROOTFS_DIR="$PROOTS/$NAME"
 # There is no uname on old Androids.
-ARCH=$(uname -m 2>/dev/null || ( aa=($("$TERMSH" arch)) ; ${aa[0]} ))
+ARCH=$(uname -m 2>/dev/null || ( aa=($("$TERMSH" arch)) ; echo "${aa[0]}" ))
 echo "Arch: $ARCH"
 MINITAR="$DATA_DIR/minitar"
 REGULAR_USER_NAME=my_acct
