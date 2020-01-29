@@ -96,7 +96,7 @@ cat << EOF > etc/profile.d/ps.sh
 PS1='\[\e[32m\]\u\[\e[33m\]@\[\e[32m\]\h\[\e[33m\]:\[\e[32m\]\w\[\e[33m\]\\$\[\e[0m\] '
 PS2='\[\e[33m\]>\[\e[0m\] '
 EOF
-echo 'Creating favorite...'
+echo 'Creating favorites...'
 "$TERMSH" view -N -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
 -u "local_terminal:/opts?execute=%24DATA_DIR%2F${ROOTFS_DIR/\//%2F}%2Frun%200%3A0&name=$NAME%20(root)"
 "$TERMSH" view -N -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
