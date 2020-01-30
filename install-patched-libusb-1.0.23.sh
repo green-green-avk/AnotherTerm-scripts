@@ -20,11 +20,11 @@ fi
 (
 which apt-get >/dev/null 2>&1 && {
 apt-get install git binutils gcc g++ make m4 autoconf automake libtool gettext
-return
+exit 0
 }
 which apk >/dev/null 2>&1 && {
 apk add git binutils gcc g++ make m4 autoconf automake libtool gettext usbutils
-return
+exit 0
 }
 )
 
