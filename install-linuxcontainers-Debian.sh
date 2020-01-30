@@ -91,12 +91,12 @@ cd "$DATA_DIR"
 (
 echo 'Getting minitar...'
 "$TERMSH" cat \
-"https://github.com/green-green-avk/build-libarchive-minitar-android/raw/master/prebuilt/$(to_minitar_arch "$ARCH")/minitar" \
+"https://raw.githubusercontent.com/green-green-avk/build-libarchive-minitar-android/master/prebuilt/$(to_minitar_arch "$ARCH")/minitar" \
 > "$MINITAR"
 chmod 755 "$MINITAR"
 echo 'Getting PRoot...'
 "$TERMSH" cat \
-"https://github.com/green-green-avk/build-proot-android/raw/master/packages/proot-android-$ARCH.tar.gz" \
+"https://raw.githubusercontent.com/green-green-avk/build-proot-android/master/packages/proot-android-$ARCH.tar.gz" \
 | "$MINITAR"
 mkdir -p "$ROOTFS_DIR/root"
 mkdir -p "$ROOTFS_DIR/tmp"
@@ -107,10 +107,11 @@ echo 'Getting Debian...'
 echo 'Setting up run script...'
 mkdir -p etc/proot
 "$TERMSH" cat \
-'https://github.com/green-green-avk/proot/raw/master/doc/usage/android/start-script-example' \
+'https://raw.githubusercontent.com/green-green-avk/proot/master/doc/usage/android/start-script-example' \
 > etc/proot/run
 chmod 755 etc/proot/run
-ln -snf root/etc/proot/run ../run
+rm -rf ../run
+ln -s root/etc/proot/run ../run # KitKat can only `ln -s'
 echo 'Configuring...'
 cat << EOF > etc/resolv.conf
 nameserver 8.8.8.8
