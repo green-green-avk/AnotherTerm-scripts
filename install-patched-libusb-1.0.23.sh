@@ -7,7 +7,7 @@
 # Enjoy any software dynamically linked to the libusb without rooting your Android device.
 
 # Targeted for any distro with apt and apk repositories at the moment.
-# Tested with Debian only yet.
+# Tested with Debian and Alpine only yet.
 
 set -e
 
@@ -23,7 +23,7 @@ apt-get install git binutils gcc g++ make m4 autoconf automake libtool gettext
 exit 0
 }
 which apk >/dev/null 2>&1 && {
-apk add git binutils gcc g++ make m4 autoconf automake libtool gettext usbutils
+apk linux-headers add git binutils gcc g++ make m4 autoconf automake libtool gettext usbutils
 exit 0
 }
 )
