@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# =======
+# Another Term libusb wrapper build script
+# =======
+
+# Enjoy any software dynamically linked to the libusb without rooting your Android device.
+
 # Targeted for any distro with apt repositories at the moment.
 # Tested with Debian only yet.
 
@@ -27,4 +33,4 @@ echo 'Setting up LD_LIBRARY_PATH...'
 echo 'export LD_LIBRARY_PATH="/opt/libusb/lib:$LD_LIBRARY_PATH"' > /etc/profile.d/libusb.sh
 echo 'Done.'
 
-echo 'libusb wrapper will work in new;y started sessions. Enjoy!'
+echo 'The libusb wrapper will work in newly started sessions. Enjoy!'
