@@ -30,10 +30,19 @@ esac
 PROOTS=proots
 NAME=linuxcontainers-deb
 ROOTFS_DIR="$PROOTS/$NAME"
-# There is no uname on old Androids.
-ARCH=$(uname -m 2>/dev/null || ( aa=($("$TERMSH" arch)) ; to_uname_arch "${aa[0]}" ))
 MINITAR="$DATA_DIR/minitar"
 REGULAR_USER_NAME=my_acct
+
+# There is no uname on old Androids.
+ARCH=$(uname -m 2>/dev/null || ( aa=($("$TERMSH" arch)) ; to_uname_arch "${aa[0]}" ))
+
+VARIANT=''
+SDK="$(grep -e '^ro\.build\.version\.sdk=' /system/build.prop || echo '')"
+SDK="${SDK#*=}"
+if [ -n "$SDK" -a "$SDK" -lt 21 ]
+then
+VARIANT='-pre5'
+fi
 
 export TMPDIR="$DATA_DIR/tmp"
 mkdir -p "$TMPDIR"
@@ -96,7 +105,7 @@ echo 'Getting minitar...'
 chmod 755 "$MINITAR"
 echo 'Getting PRoot...'
 "$TERMSH" cat \
-"https://raw.githubusercontent.com/green-green-avk/build-proot-android/master/packages/proot-android-$ARCH.tar.gz" \
+"https://raw.githubusercontent.com/green-green-avk/build-proot-android/master/packages/proot-android-$ARCH$VARIANT.tar.gz" \
 | "$MINITAR"
 mkdir -p "$ROOTFS_DIR/root"
 mkdir -p "$ROOTFS_DIR/tmp"
