@@ -6,7 +6,7 @@
 
 # Enjoy any software dynamically linked to the libusb without rooting your Android device.
 
-# Targeted for any distro with apt repositories at the moment.
+# Targeted for any distro with apt and apk repositories at the moment.
 # Tested with Debian only yet.
 
 set -e
@@ -17,7 +17,16 @@ echo 'Should be run as root!' >&2
 exit 1
 fi
 
+{
+which apt-get >/dev/null 2>&1 && {
 apt-get install git binutils gcc g++ make m4 autoconf automake libtool gettext
+return
+}
+which apk >/dev/null 2>&1 && {
+apk add git binutils gcc g++ make m4 autoconf automake libtool gettext usbutils
+return
+}
+}
 
 mkdir -p build
 cd build
