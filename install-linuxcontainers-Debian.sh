@@ -95,6 +95,7 @@ echo "https://us.images.linuxcontainers.org/$P/rootfs.tar.xz"
 }
 
 echo "Arch: $ARCH"
+echo "Variant: $VARIANT"
 
 cd "$DATA_DIR"
 (
