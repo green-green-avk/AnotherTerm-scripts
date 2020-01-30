@@ -37,7 +37,7 @@ REGULAR_USER_NAME=my_acct
 ARCH=$(uname -m 2>/dev/null || ( aa=($("$TERMSH" arch)) ; to_uname_arch "${aa[0]}" ))
 
 VARIANT=''
-SDK="$(grep -e '^ro\.build\.version\.sdk=' /system/build.prop || echo '')"
+SDK="$(grep -e '^ro\.build\.version\.sdk=' /system/build.prop 2>/dev/null || echo '')"
 SDK="${SDK#*=}"
 if [ -n "$SDK" -a "$SDK" -lt 21 ]
 then
