@@ -4,12 +4,34 @@
 
 set -e
 
+DISTRO=debian
+RELEASE=buster # change to what you want
+
+to_uname_arch() {
+case "$1" in
+armeabi-v7a)
+echo armv7a
+;;
+arm64-v8a)
+echo aarch64
+;;
+x86)
+echo i686
+;;
+x86_64)
+echo amd64
+;;
+*)
+echo "$1"
+;;
+esac
+}
+
 PROOTS=proots
 NAME=linuxcontainers-deb
 ROOTFS_DIR="$PROOTS/$NAME"
 # There is no uname on old Androids.
-ARCH=$(uname -m 2>/dev/null || ( aa=($("$TERMSH" arch)) ; echo "${aa[0]}" ))
-echo "Arch: $ARCH"
+ARCH=$(uname -m 2>/dev/null || ( aa=($("$TERMSH" arch)) ; to_uname_arch "${aa[0]}" ))
 MINITAR="$DATA_DIR/minitar"
 REGULAR_USER_NAME=my_acct
 
@@ -17,7 +39,7 @@ export TMPDIR="$DATA_DIR/tmp"
 mkdir -p "$TMPDIR"
 
 to_minitar_arch() {
-case $1 in
+case "$1" in
 armv7a)
 echo armeabi-v7a
 ;;
@@ -30,32 +52,46 @@ echo x86
 amd64)
 echo x86_64
 ;;
+*)
+echo "$1"
+;;
 esac
 }
 
-# Be aware: URLs may change!
-to_arch_link() {
-case $1 in
+to_lco_arch() {
+case "$1" in
 armv7a)
-echo 'https://us.images.linuxcontainers.org/images/debian/buster/armhf/default/20200130_05:41/rootfs.tar.xz'
+echo armhf
 ;;
 aarch64)
-echo 'https://us.images.linuxcontainers.org/images/debian/buster/arm64/default/20200130_05:29/rootfs.tar.xz'
+echo arm64
 ;;
 i686)
-echo 'https://us.images.linuxcontainers.org/images/debian/buster/i386/default/20200130_05:24/rootfs.tar.xz'
+echo i386
 ;;
 amd64)
-echo 'https://us.images.linuxcontainers.org/images/debian/buster/amd64/default/20200130_05:24/rootfs.tar.xz'
+echo amd64
+;;
+*)
+echo "$1"
 ;;
 esac
 }
+
+to_lco_link() {
+R="$("$TERMSH" cat 'https://us.images.linuxcontainers.org/meta/1.0/index-user' \
+| grep -e "^$DISTRO;$RELEASE;$(to_lco_arch "$1");default;")"
+P="${R##*;}"
+echo "https://us.images.linuxcontainers.org/$P/rootfs.tar.xz"
+}
+
+echo "Arch: $ARCH"
 
 cd "$DATA_DIR"
 (
 echo 'Getting minitar...'
 "$TERMSH" cat \
-"https://github.com/green-green-avk/build-libarchive-minitar-android/raw/master/prebuilt/$(to_minitar_arch $ARCH)/minitar" \
+"https://github.com/green-green-avk/build-libarchive-minitar-android/raw/master/prebuilt/$(to_minitar_arch "$ARCH")/minitar" \
 > "$MINITAR"
 chmod 755 "$MINITAR"
 echo 'Getting PRoot...'
@@ -67,7 +103,7 @@ mkdir -p "$ROOTFS_DIR/tmp"
 cd "$ROOTFS_DIR/root"
 echo 'Getting Debian...'
 "$TERMSH" cat \
-"$(to_arch_link $ARCH)" | "$MINITAR" || echo 'Possibly URL was changed: recheck on the site.' >&2
+"$(to_lco_link "$ARCH")" | "$MINITAR" || echo 'Possibly URL was changed: recheck on the site.' >&2
 echo 'Setting up run script...'
 mkdir -p etc/proot
 "$TERMSH" cat \
