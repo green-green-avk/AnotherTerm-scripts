@@ -41,7 +41,7 @@ esac
 }
 
 PROOTS=proots
-NAME=${NAME:-"linuxcontainers-$DISTRO-$RELEASE"}
+NAME="${NAME:-"linuxcontainers-$DISTRO-$RELEASE"}"
 ROOTFS_DIR="$PROOTS/$NAME"
 MINITAR="$DATA_DIR/minitar"
 REGULAR_USER_NAME=my_acct
@@ -101,8 +101,8 @@ esac
 }
 
 to_lco_link() {
-R="$("$TERMSH" cat 'https://us.images.linuxcontainers.org/meta/1.0/index-user' || exit_with 'Can't download index from linuxcontainers.org' \
-| grep -e "^$DISTRO;$RELEASE;$(to_lco_arch "$1");default;" || exit_with 'Cannot find specified rootfs' )"
+R="$( { "$TERMSH" cat 'https://us.images.linuxcontainers.org/meta/1.0/index-user' || exit_with 'Cannot download index from linuxcontainers.org' ;} \
+| { grep -e "^$DISTRO;$RELEASE;$(to_lco_arch "$1");default;" || exit_with 'Cannot find specified rootfs' ;} )" || exit 1
 P="${R##*;}"
 echo "https://us.images.linuxcontainers.org/$P/rootfs.tar.xz"
 }
@@ -112,7 +112,10 @@ echo "Variant: $VARIANT"
 echo "$DISTRO $RELEASE"
 echo
 
-ROOT_FS="$(to_lco_link "$ARCH")"
+ROOTFS_URL="$(to_lco_link "$ARCH")"
+
+echo "Source: $ROOTFS_URL"
+echo
 
 cd "$DATA_DIR"
 (
@@ -129,7 +132,7 @@ mkdir -p "$ROOTFS_DIR/root"
 mkdir -p "$ROOTFS_DIR/tmp"
 cd "$ROOTFS_DIR/root"
 echo 'Getting Debian...'
-"$TERMSH" cat "$ROOT_FS" | "$MINITAR" || echo 'Possibly URL was changed: recheck on the site.' >&2
+"$TERMSH" cat "$ROOTFS_URL" | "$MINITAR" || echo 'Possibly URL was changed: recheck on the site.' >&2
 echo 'Setting up run script...'
 mkdir -p etc/proot
 "$TERMSH" cat \
@@ -144,7 +147,7 @@ nameserver 8.8.8.8
 nameserver 8.8.4.4
 EOF
 # We have no adduser or useradd here...
-cp -a etc/skel home/$REGULAR_USER_NAME
+cp -a etc/skel home/$REGULAR_USER_NAME || true # Not for all distros
 echo \
 "$REGULAR_USER_NAME:x:$USER_ID:$USER_ID:guest:/home/$REGULAR_USER_NAME:/bin/bash" \
 >> etc/passwd
