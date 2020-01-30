@@ -33,19 +33,20 @@ echo x86_64
 esac
 }
 
+# Be aware: URLs may change!
 to_arch_link() {
 case $1 in
 armv7a)
-echo 'https://us.images.linuxcontainers.org/images/debian/buster/armhf/default/20200127 05:24/rootfs.tar.xz'
+echo 'https://us.images.linuxcontainers.org/images/debian/buster/armhf/default/20200130_05:41/rootfs.tar.xz'
 ;;
 aarch64)
-echo 'https://us.images.linuxcontainers.org/images/debian/buster/arm64/default/20200127_05:32/rootfs.tar.xz'
+echo 'https://us.images.linuxcontainers.org/images/debian/buster/arm64/default/20200130_05:29/rootfs.tar.xz'
 ;;
 i686)
-echo 'https://us.images.linuxcontainers.org/images/debian/buster/i386/default/20200127 05:24/rootfs.tar.xz'
+echo 'https://us.images.linuxcontainers.org/images/debian/buster/i386/default/20200130_05:24/rootfs.tar.xz'
 ;;
 amd64)
-echo 'https://us.images.linuxcontainers.org/images/debian/buster/amd64/default/20200127 05:50/rootfs.tar.xz'
+echo 'https://us.images.linuxcontainers.org/images/debian/buster/amd64/default/20200130_05:24/rootfs.tar.xz'
 ;;
 esac
 }
@@ -66,8 +67,7 @@ mkdir -p "$ROOTFS_DIR/tmp"
 cd "$ROOTFS_DIR/root"
 echo 'Getting Debian...'
 "$TERMSH" cat \
-"$(to_arch_link $ARCH)" \
-| "$MINITAR"
+"$(to_arch_link $ARCH)" | "$MINITAR" || echo 'Possibly URL was changed: recheck on the site.' >&2
 echo 'Setting up run script...'
 mkdir -p etc/proot
 "$TERMSH" cat \
