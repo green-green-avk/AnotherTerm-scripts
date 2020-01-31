@@ -24,8 +24,9 @@ exit 1
 
 prompt() {
 echo -n "$1 [$2]: "
-read V
-echo "${V:-"$2"}"
+local _V
+read _V
+eval "$3='${_V:-"$2"}'" # Android default shell can't `typeset -g' before version 8
 }
 
 to_uname_arch() {
@@ -51,7 +52,7 @@ esac
 PROOTS='proots'
 NAME="${NAME:-"linuxcontainers-$DISTRO-$RELEASE"}"
 
-NAME="$(prompt "Installation subdir name $PROOTS/___" "$NAME")"
+prompt "Installation subdir name $PROOTS/___" "$NAME" NAME
 
 ROOTFS_DIR="$PROOTS/$NAME"
 MINITAR="$DATA_DIR/minitar"
@@ -111,6 +112,8 @@ esac
 }
 
 to_lco_link() {
+local R
+local P
 R="$( { "$TERMSH" cat 'https://us.images.linuxcontainers.org/meta/1.0/index-user' || exit_with 'Cannot download index from linuxcontainers.org' ;} \
 | { grep -e "^$DISTRO;$RELEASE;$(to_lco_arch "$1");default;" || exit_with 'Cannot find specified rootfs' ;} )" || exit 1
 P="${R##*;}"
@@ -145,8 +148,8 @@ echo 'Getting Debian...'
 "$TERMSH" cat "$ROOTFS_URL" | "$MINITAR" || echo 'Possibly URL was changed: recheck on the site.' >&2
 
 cat etc/passwd
-REGULAR_USER_NAME="$(prompt 'Regular user name' "$REGULAR_USER_NAME")"
-SHELL="$(prompt 'Preferred shell' "$SHELL")"
+prompt 'Regular user name' "$REGULAR_USER_NAME" REGULAR_USER_NAME
+prompt 'Preferred shell' "$SHELL" SHELL
 
 echo 'Setting up run script...'
 mkdir -p etc/proot
