@@ -23,7 +23,7 @@ apt-get install git binutils gcc g++ make m4 autoconf automake libtool gettext
 exit 0
 }
 which apk >/dev/null 2>&1 && {
-apk linux-headers add git binutils gcc g++ make m4 autoconf automake libtool gettext usbutils
+apk add linux-headers git binutils gcc g++ make m4 autoconf automake libtool gettext usbutils
 exit 0
 }
 )
