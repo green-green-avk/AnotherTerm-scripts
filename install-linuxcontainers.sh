@@ -15,7 +15,7 @@ DISTRO="$1"
 RELEASE="$2"
 NAME="$3"
 REGULAR_USER_NAME='my_acct'
-SHELL='bash'
+SHELL='/bin/bash'
 
 exit_with() {
 echo $* >&2
