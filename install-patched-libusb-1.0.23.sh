@@ -26,6 +26,13 @@ which apk >/dev/null 2>&1 && {
 apk add linux-headers git binutils gcc g++ make m4 autoconf automake libtool gettext usbutils
 exit 0
 }
+which yum >/dev/null 2>&1 && {
+yum install git binutils gcc gcc-c++ make m4 autoconf automake libtool gettext
+exit 0
+}
+echo 'No idea about your distribution...'
+echo 'Presuming prerequisites are already installed.'
+exit 0
 )
 
 mkdir -p build
