@@ -14,10 +14,18 @@ fi
 DISTRO="$1"
 RELEASE="$2"
 NAME="$3"
+REGULAR_USER_NAME='my_acct'
+SHELL='bash'
 
 exit_with() {
 echo $* >&2
 exit 1
+}
+
+prompt() {
+echo -n "$1 [$2]: "
+read V
+echo "${V:-"$2"}"
 }
 
 to_uname_arch() {
@@ -40,11 +48,13 @@ echo "$1"
 esac
 }
 
-PROOTS=proots
+PROOTS='proots'
 NAME="${NAME:-"linuxcontainers-$DISTRO-$RELEASE"}"
+
+NAME="$(prompt "Installation subdir name $PROOTS/___" "$NAME")"
+
 ROOTFS_DIR="$PROOTS/$NAME"
 MINITAR="$DATA_DIR/minitar"
-REGULAR_USER_NAME=my_acct
 
 # There is no uname on old Androids.
 ARCH=$(uname -m 2>/dev/null || ( aa=($("$TERMSH" arch)) ; to_uname_arch "${aa[0]}" ))
@@ -133,24 +143,28 @@ mkdir -p "$ROOTFS_DIR/tmp"
 cd "$ROOTFS_DIR/root"
 echo 'Getting Debian...'
 "$TERMSH" cat "$ROOTFS_URL" | "$MINITAR" || echo 'Possibly URL was changed: recheck on the site.' >&2
+
+cat etc/passwd
+REGULAR_USER_NAME="$(prompt 'Regular user name' "$REGULAR_USER_NAME")"
+SHELL="$(prompt 'Preferred shell' "$SHELL")"
+
 echo 'Setting up run script...'
 mkdir -p etc/proot
-"$TERMSH" cat \
-'https://raw.githubusercontent.com/green-green-avk/proot/master/doc/usage/android/start-script-example' \
-> etc/proot/run
+RUN="$("$TERMSH" cat \
+'https://raw.githubusercontent.com/green-green-avk/AnotherTerm-scripts/master/assets/run-tpl')"
+RUN="${RUN/'@USER@'/"$REGULAR_USER_NAME"}"
+RUN="${RUN/'@SHELL@'/"$SHELL"}"
+echo "$RUN" > etc/proot/run
 chmod 755 etc/proot/run
 rm -rf ../run
 ln -s root/etc/proot/run ../run # KitKat can only `ln -s'
+
 echo 'Configuring...'
 cat << EOF > etc/resolv.conf
 nameserver 8.8.8.8
 nameserver 8.8.4.4
 EOF
-# We have no adduser or useradd here...
-cp -a etc/skel home/$REGULAR_USER_NAME || true # Not for all distros
-echo \
-"$REGULAR_USER_NAME:x:$USER_ID:$USER_ID:guest:/home/$REGULAR_USER_NAME:/bin/bash" \
->> etc/passwd
+
 cat << EOF > etc/profile.d/locale.sh
 if [ -f /etc/default/locale ]
 then
@@ -162,6 +176,13 @@ cat << EOF > etc/profile.d/ps.sh
 PS1='\[\e[32m\]\u\[\e[33m\]@\[\e[32m\]\h\[\e[33m\]:\[\e[32m\]\w\[\e[33m\]\\$\[\e[0m\] '
 PS2='\[\e[33m\]>\[\e[0m\] '
 EOF
+
+# We have no adduser or useradd here...
+cp -a etc/skel home/$REGULAR_USER_NAME 2>/dev/null || mkdir -p home/$REGULAR_USER_NAME
+echo \
+"$REGULAR_USER_NAME:x:$USER_ID:$USER_ID:guest:/home/$REGULAR_USER_NAME:$SHELL" \
+>> etc/passwd
+
 echo 'Creating favorites...'
 "$TERMSH" view -N -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
 -u "local_terminal:/opts?execute=%24DATA_DIR%2F${ROOTFS_DIR/\//%2F}%2Frun%200%3A0&name=$NAME%20(root)"
