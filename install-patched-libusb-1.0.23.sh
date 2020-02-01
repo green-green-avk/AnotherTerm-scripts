@@ -7,7 +7,7 @@
 # Enjoy any software dynamically linked to the libusb without rooting your Android device.
 
 # Targeted for any distro with apt and apk repositories at the moment.
-# Tested with Debian and Alpine only yet.
+# Tested with Debian, Alpine and CentOS only yet.
 
 set -e
 
