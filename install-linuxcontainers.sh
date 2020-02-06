@@ -127,7 +127,7 @@ echo "https://us.images.linuxcontainers.org/$P/rootfs.tar.xz"
 echo
 echo "Arch: $ARCH"
 echo "Variant: $VARIANT"
-echo "RootFS: $DISTRO $RELEASE"
+echo "Root FS: $DISTRO $RELEASE"
 echo
 
 ROOTFS_URL="$(to_lco_link "$ARCH")"
@@ -149,7 +149,7 @@ echo 'Getting PRoot...'
 mkdir -p "$ROOTFS_DIR/root"
 mkdir -p "$ROOTFS_DIR/tmp"
 cd "$ROOTFS_DIR/root"
-echo 'Getting Debian...'
+echo 'Getting Linux root FS...'
 "$TERMSH" cat "$ROOTFS_URL" | "$MINITAR" || echo 'Possibly URL was changed: recheck on the site.' >&2
 
 echo
