@@ -65,8 +65,7 @@ MINITAR="$DATA_DIR/minitar"
 ARCH=$(uname -m 2>/dev/null || ( aa=($("$TERMSH" arch)) ; to_uname_arch "${aa[0]}" ))
 
 VARIANT=''
-SDK="$(grep -e '^ro\.build\.version\.sdk=' /system/build.prop 2>/dev/null || echo '')"
-SDK="${SDK#*=}"
+SDK="$("$TERMSH" sdk)"
 if [ -n "$SDK" -a "$SDK" -lt 21 ]
 then
 VARIANT='-pre5'
@@ -197,9 +196,11 @@ echo \
 >> etc/passwd
 
 echo 'Creating favorites...'
-"$TERMSH" view -N -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
+"$TERMSH" view -N -p "Root fav: $NAME" \
+-r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
 -u "local_terminal:/opts?execute=%24DATA_DIR%2F${ROOTFS_DIR/\//%2F}%2Frun%200%3A0&name=$NAME%20(root)"
-"$TERMSH" view -N -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
+"$TERMSH" view -N -p "User fav: $NAME" \
+-r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
 -u "local_terminal:/opts?execute=%24DATA_DIR%2F${ROOTFS_DIR/\//%2F}%2Frun&name=$NAME"
 echo
 echo 'Done, see notifications.'
