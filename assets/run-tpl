@@ -4,7 +4,13 @@
 # See https://github.com/green-green-avk/AnotherTermLite/wiki
 # for `DATA_DIR', `LIB_DIR' and `TERMSH_UID' environment variables meaning.
 
+inc() {
+if [ -f "$1" ] ; then . "$1" ; fi
+}
+
 BASE_DIR="${0%/*}" # Old Androids could not have `dirname'.
+CFG_DIR="$(readlink "$0")"
+CFG_DIR="$BASE_DIR/${CFG_DIR%/*}"
 
 export TERMSH_UID="$USER_ID" # "$(id -u)" does not work for old Androids.
 
@@ -14,42 +20,48 @@ export PROOT_L2S_DIR="$BASE_DIR/l2s"
 mkdir -p "$PROOT_TMP_DIR"
 mkdir -p "$PROOT_L2S_DIR"
 
-export PATH='/bin:/usr/bin'
-export USER='@USER@'
-export HOME="/home/$USER"
-SHELL='@SHELL@'
-FB_SHELL='/bin/sh'
+USER=
+SHELL=
+MAPPINGS=()
 
-if [ -n "$1" ]
-then
+inc "$CFG_DIR/run.cfg"
+
+USER=${USER:-'@USER@'}
+SHELL=${SHELL:-'@SHELL@'}
+FB_SHELL='/bin/sh'
+PATH='/bin:/usr/bin'
+HOME="/home/$USER"
+
+# Optional mappings
+MAPPINGS+=('-b' '/data')
+# ===
+
+if [ -n "$1" ] ; then
 	UG="--change-id=$1"
-	if [ "$1" = '0:0' ]
-	then
+	if [ "$1" = '0:0' ] ; then
 		UG='-0'
-		export PATH='/sbin:/usr/sbin:/bin:/usr/bin'
-		export USER='root'
-		export HOME='/root'
+		PATH='/sbin:/usr/sbin:/bin:/usr/bin'
+		USER='root'
+		HOME='/root'
 	fi
 else UG=
 fi
 
-# Optional mappings
-MAP_ANDROID_DATA_DIR='-b /data'
-# ===
-
-if [ ! -x "$BASE_DIR/root/$SHELL" ]
-then
-SHELL="$FB_SHELL"
-fi
+if [ ! -x "$BASE_DIR/root/$SHELL" ] ; then SHELL="$FB_SHELL" ; fi
 
 unset TMPDIR
 unset LD_LIBRARY_PATH
 
+export PATH
+export USER
+export HOME
 export TERMSH=termsh # Just for convenience.
+
+inc "$CFG_DIR/run.rc"
 
 "$DATA_DIR/root/bin/proot" -r "$BASE_DIR/root" $UG \
 -b /dev -b /proc -b /sys -b /system -b /vendor -b /storage \
-$MAP_ANDROID_DATA_DIR \
--b "$LIB_DIR/libtermsh.so":/bin/termsh \
+"${MAPPINGS[@]}" \
+-b "$LIB_DIR/libtermsh.so:/bin/termsh" \
 --link2symlink -p -L --tcsetsf2tcsets \
 -w "$HOME" "$SHELL" -l
