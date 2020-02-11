@@ -198,10 +198,10 @@ echo \
 echo 'Creating favorites...'
 "$TERMSH" view -N -p "Root fav: $NAME" \
 -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
--u "local_terminal:/opts?execute=%24DATA_DIR%2F${ROOTFS_DIR/\//%2F}%2Frun%200%3A0&name=$NAME%20(root)"
+-u "local_terminal:/opts?execute=%24DATA_DIR%2F${ROOTFS_DIR//\//%2F}%2Frun%200%3A0&name=$NAME%20(root)"
 "$TERMSH" view -N -p "User fav: $NAME" \
 -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
--u "local_terminal:/opts?execute=%24DATA_DIR%2F${ROOTFS_DIR/\//%2F}%2Frun&name=$NAME"
+-u "local_terminal:/opts?execute=%24DATA_DIR%2F${ROOTFS_DIR//\//%2F}%2Frun&name=$NAME"
 echo
 echo 'Done, see notifications.'
 )
