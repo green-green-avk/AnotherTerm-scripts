@@ -8,6 +8,7 @@ if [ -z "$1" -o -z "$2" ]
 then
 echo 'Usage:'
 echo "	$0 <distro> <release> [<target_subdir_name>]"
+echo
 exit 1
 fi
 
@@ -18,7 +19,7 @@ REGULAR_USER_NAME='my_acct'
 SHELL='/bin/bash'
 
 exit_with() {
-echo $* >&2
+echo "$@" >&2
 exit 1
 }
 
