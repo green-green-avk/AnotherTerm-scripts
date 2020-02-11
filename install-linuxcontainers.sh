@@ -144,6 +144,10 @@ mkdir -p etc/proot
 cat << EOF > etc/proot/run.cfg
 USER=${REG_USER@Q}
 SHELL=${FAV_SHELL@Q}
+
+# =======
+#OPT_ARGS=('-b' '/data')
+# =======
 EOF
 "$TERMSH" cat \
 'https://raw.githubusercontent.com/green-green-avk/AnotherTerm-scripts/master/assets/run-tpl' \
