@@ -4,19 +4,25 @@
 
 set -e
 
-if [ -z "$1" -o -z "$2" ]
-then
+if [ "$1" = '-a'] ; then
+NI=1
+shift
+else
+NI=
+fi
+
+if [ -z "$1" -o -z "$2" ] ; then
 echo 'Usage:'
-echo "	$0 <distro> <release> [<target_subdir_name>]"
+echo "	$0 [-a] <distro> <release> [<target_subdir_name>]"
 echo
 exit 1
 fi
 
 DISTRO="$1"
 RELEASE="$2"
-NAME="$3"
-REGULAR_USER_NAME='my_acct'
-SHELL='/bin/bash'
+NAME="${3:-"linuxcontainers-$DISTRO-$RELEASE"}"
+REG_USER="${REG_USER:-'my_acct'}"
+FAV_SHELL="${FAV_SHELL:-'/bin/bash'}"
 
 exit_with() {
 echo "$@" >&2
@@ -43,8 +49,7 @@ esac
 
 PROOTS='proots'
 
-if [ -z "$NAME" ]
-then
+if [ -n "$NI" ] ; then
 NAME="linuxcontainers-$DISTRO-$RELEASE"
 echo
 prompt "Installation subdir name $PROOTS/___" "$NAME" NAME
@@ -123,21 +128,23 @@ cd "$ROOTFS_DIR/root"
 echo 'Getting Linux root FS...'
 "$TERMSH" cat "$ROOTFS_URL" | "$MINITAR" || echo 'Possibly URL was changed: recheck on the site.' >&2
 
+if [ -n "$NI" ] ; then
 echo
 echo -e '\e[1m/etc/passwd:\e[0m'
 echo '\e[1m=======\e[0m'
 cat etc/passwd
 echo '\e[1m=======\e[0m'
-prompt 'Regular user name' "$REGULAR_USER_NAME" REGULAR_USER_NAME
-prompt 'Preferred shell' "$SHELL" SHELL
+prompt 'Regular user name' "$REG_USER" REG_USER
+prompt 'Preferred shell' "$FAV_SHELL" FAV_SHELL
 echo
+fi
 
 echo 'Setting up run script...'
 mkdir -p etc/proot
 RUN="$("$TERMSH" cat \
 'https://raw.githubusercontent.com/green-green-avk/AnotherTerm-scripts/master/assets/run-tpl')"
-RUN="${RUN/"'@USER@'"/"${REGULAR_USER_NAME@Q}"}"
-RUN="${RUN/"'@SHELL@'"/"${SHELL@Q}"}"
+RUN="${RUN/"'@USER@'"/"${REG_USER@Q}"}"
+RUN="${RUN/"'@SHELL@'"/"${FAV_SHELL@Q}"}"
 echo "$RUN" > etc/proot/run
 chmod 755 etc/proot/run
 rm -rf ../run
@@ -162,9 +169,9 @@ PS2='\[\e[33m\]>\[\e[0m\] '
 EOF
 
 # We have no adduser or useradd here...
-cp -a etc/skel home/$REGULAR_USER_NAME 2>/dev/null || mkdir -p home/$REGULAR_USER_NAME
+cp -a etc/skel home/$REG_USER 2>/dev/null || mkdir -p home/$REG_USER
 echo \
-"$REGULAR_USER_NAME:x:$USER_ID:$USER_ID:guest:/home/$REGULAR_USER_NAME:$SHELL" \
+"$REG_USER:x:$USER_ID:$USER_ID:guest:/home/$REG_USER:$FAV_SHELL" \
 >> etc/passwd
 
 echo 'Creating favorites...'
