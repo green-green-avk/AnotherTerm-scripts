@@ -21,8 +21,8 @@ fi
 DISTRO="$1"
 RELEASE="$2"
 NAME="${3:-"linuxcontainers-$DISTRO-$RELEASE"}"
-REG_USER="${REG_USER:-'my_acct'}"
-FAV_SHELL="${FAV_SHELL:-'/bin/bash'}"
+REG_USER="${REG_USER:-my_acct}"
+FAV_SHELL="${FAV_SHELL:-/bin/bash}"
 
 exit_with() {
 echo "$@" >&2
@@ -141,11 +141,13 @@ fi
 
 echo 'Setting up run script...'
 mkdir -p etc/proot
-RUN="$("$TERMSH" cat \
-'https://raw.githubusercontent.com/green-green-avk/AnotherTerm-scripts/master/assets/run-tpl')"
-RUN="${RUN/"'@USER@'"/"${REG_USER@Q}"}"
-RUN="${RUN/"'@SHELL@'"/"${FAV_SHELL@Q}"}"
-echo "$RUN" > etc/proot/run
+cat << EOF > etc/proot/run.cfg
+USER=${REG_USER@Q}
+SHELL=${FAV_SHELL@Q}
+EOF
+"$TERMSH" cat \
+'https://raw.githubusercontent.com/green-green-avk/AnotherTerm-scripts/master/assets/run-tpl' \
+> etc/proot/run
 chmod 755 etc/proot/run
 rm -rf ../run
 ln -s root/etc/proot/run ../run # KitKat can only `ln -s'
