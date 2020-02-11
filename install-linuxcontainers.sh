@@ -49,7 +49,7 @@ esac
 
 PROOTS='proots'
 
-if [ -n "$NI" ] ; then
+if [ -z "$NI" ] ; then
 NAME="linuxcontainers-$DISTRO-$RELEASE"
 echo
 prompt "Installation subdir name $PROOTS/___" "$NAME" NAME
@@ -128,7 +128,7 @@ cd "$ROOTFS_DIR/root"
 echo 'Getting Linux root FS...'
 "$TERMSH" cat "$ROOTFS_URL" | "$MINITAR" || echo 'Possibly URL was changed: recheck on the site.' >&2
 
-if [ -n "$NI" ] ; then
+if [ -z "$NI" ] ; then
 echo
 echo -e '\e[1m/etc/passwd:\e[0m'
 echo '\e[1m=======\e[0m'
