@@ -26,7 +26,8 @@ prompt() {
 echo -en "\e[1m$1 [\e[0m$2\e[1m]:\e[0m "
 local _V
 read _V
-eval "$3='${_V:-"$2"}'" # Android default shell can't `typeset -g' before version 8
+_V="${_V:-"$2"}"
+eval "$3=${_V@Q}" # Default shell can't `typeset -g' before Android 8.
 }
 
 to_uname_arch() {
@@ -164,8 +165,8 @@ echo 'Setting up run script...'
 mkdir -p etc/proot
 RUN="$("$TERMSH" cat \
 'https://raw.githubusercontent.com/green-green-avk/AnotherTerm-scripts/master/assets/run-tpl')"
-RUN="${RUN/'@USER@'/"$REGULAR_USER_NAME"}"
-RUN="${RUN/'@SHELL@'/"$SHELL"}"
+RUN="${RUN/"'@USER@'"/"${REGULAR_USER_NAME@Q}"}"
+RUN="${RUN/"'@SHELL@'"/"${SHELL@Q}"}"
 echo "$RUN" > etc/proot/run
 chmod 755 etc/proot/run
 rm -rf ../run
