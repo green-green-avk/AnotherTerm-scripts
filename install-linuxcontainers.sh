@@ -146,7 +146,7 @@ USER=${REG_USER@Q}
 SHELL=${FAV_SHELL@Q}
 
 # =======
-#OPT_ARGS=('-b' '/data')
+#PROOT_OPT_ARGS=('-b' '/data')
 # =======
 EOF
 "$TERMSH" cat \
