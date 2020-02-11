@@ -26,8 +26,8 @@ MAPPINGS=()
 
 inc "$CFG_DIR/run.cfg"
 
-USER=${USER:-'@USER@'}
-SHELL=${SHELL:-'@SHELL@'}
+USER=${USER:-my_acct}
+SHELL=${SHELL:-/bin/bash}
 FB_SHELL='/bin/sh'
 PATH='/bin:/usr/bin'
 HOME="/home/$USER"
