@@ -22,7 +22,7 @@ mkdir -p "$PROOT_L2S_DIR"
 
 USER=
 SHELL=
-OPT_ARGS=()
+PROOT_OPT_ARGS=()
 
 inc "$CFG_DIR/run.cfg"
 
@@ -31,7 +31,7 @@ SHELL=${SHELL:-/bin/bash}
 FB_SHELL='/bin/sh'
 PATH='/bin:/usr/bin'
 HOME="/home/$USER"
-OPT_ARGS=("${OPT_ARGS[@]}")
+PROOT_OPT_ARGS=("${PROOT_OPT_ARGS[@]}")
 
 if [ -n "$1" ] ; then
 	UG="--change-id=$1"
@@ -59,6 +59,6 @@ inc "$CFG_DIR/run.rc"
 "$DATA_DIR/root/bin/proot" -r "$BASE_DIR/root" $UG \
 -b /dev -b /proc -b /sys -b /system -b /vendor -b /storage \
 -b "$LIB_DIR/libtermsh.so:/bin/termsh" \
-"${OPT_ARGS[@]}" \
+"${PROOT_OPT_ARGS[@]}" \
 --link2symlink -p -L --tcsetsf2tcsets \
 -w "$HOME" "$SHELL" -l
