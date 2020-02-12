@@ -181,12 +181,13 @@ echo \
 >> etc/passwd
 
 echo 'Creating favorites...'
+UE_RUN="$("TERMSH" uri-encode "\$DATA_DIR/$ROOTFS_DIR/run")"
 "$TERMSH" view -N -p "Root fav: $NAME" \
 -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
--u "local_terminal:/opts?execute=%24DATA_DIR%2F${ROOTFS_DIR//\//%2F}%2Frun%200%3A0&name=$NAME%20(root)"
+-u "local-terminal:/opts?execute=${UE_RUN}%200%3A0&name=$("TERMSH" uri-encode "$NAME (root)")"
 "$TERMSH" view -N -p "User fav: $NAME" \
 -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
--u "local_terminal:/opts?execute=%24DATA_DIR%2F${ROOTFS_DIR//\//%2F}%2Frun&name=$NAME"
+-u "local-terminal:/opts?execute=${UE_RUN}&name=$("TERMSH" uri-encode "$NAME")"
 echo
 echo 'Done, see notifications.'
 )
