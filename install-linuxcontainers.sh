@@ -4,7 +4,7 @@
 
 set -e
 
-if [ "$1" = '-a'] ; then
+if [ "$1" = '-a' ] ; then
 NI=1
 shift
 else
@@ -181,13 +181,13 @@ echo \
 >> etc/passwd
 
 echo 'Creating favorites...'
-UE_RUN="$("TERMSH" uri-encode "\$DATA_DIR/$ROOTFS_DIR/run")"
+UE_RUN="$("$TERMSH" uri-encode "\$DATA_DIR/$ROOTFS_DIR/run")"
 "$TERMSH" view -N -p "Root fav: $NAME" \
 -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
--u "local-terminal:/opts?execute=${UE_RUN}%200%3A0&name=$("TERMSH" uri-encode "$NAME (root)")"
+-u "local-terminal:/opts?execute=${UE_RUN}%200%3A0&name=$("$TERMSH" uri-encode "$NAME (root)")"
 "$TERMSH" view -N -p "User fav: $NAME" \
 -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
--u "local-terminal:/opts?execute=${UE_RUN}&name=$("TERMSH" uri-encode "$NAME")"
+-u "local-terminal:/opts?execute=${UE_RUN}&name=$("$TERMSH" uri-encode "$NAME")"
 echo
 echo 'Done, see notifications.'
 )
