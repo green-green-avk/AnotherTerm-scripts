@@ -15,14 +15,10 @@ CFG_DIR="$BASE_DIR/${CFG_DIR%/*}"
 export TERMSH_UID="$USER_ID" # "$(id -u)" does not work for old Androids.
 
 export PROOT_TMP_DIR="$BASE_DIR/tmp"
-export PROOT_L2S_DIR="$BASE_DIR/l2s"
+export PROOT_L2S_DIR="$BASE_DIR/root/.proot.meta"
 
 mkdir -p "$PROOT_TMP_DIR"
 mkdir -p "$PROOT_L2S_DIR"
-
-# === WORKAROUND ===
-PROOT_WA=('-b' "$PROOT_L2S_DIR:/var/.proot.meta")
-# ===
 
 USER=
 SHELL=
@@ -63,7 +59,6 @@ inc "$CFG_DIR/run.rc"
 "$DATA_DIR/root/bin/proot" -r "$BASE_DIR/root" $UG \
 -b /dev -b /proc -b /sys -b /system -b /vendor -b /storage \
 -b "$LIB_DIR/libtermsh.so:/bin/termsh" \
-"${PROOT_WA[@]}" \
 "${PROOT_OPT_ARGS[@]}" \
 --link2symlink -p -L --tcsetsf2tcsets \
 -w "$HOME" "$SHELL" -l
