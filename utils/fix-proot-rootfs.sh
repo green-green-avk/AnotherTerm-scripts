@@ -16,7 +16,7 @@ local L="$(readlink "$1")"
 [[ $(basename "$L") = $OP* ]] && { echo "Relinking: $1 -> $L" ; ln -snf "$(prepend "$L")" "$1" ; }
 }
 relink "$1"
-[[ $(basename "$1") = $OP* ]] && { echo " Renaming: $1" ; mv -Tf "$1" "$(prepend "$1")" ; }
+[[ $(basename "$1") = $OP* ]] && { echo " Renaming: $1" ; mv -f "$1" "$(prepend "$1")" ; }
 exit 0
 fi
 
