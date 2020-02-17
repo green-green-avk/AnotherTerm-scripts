@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/system/bin/sh
 
 set -e
 
@@ -20,4 +20,4 @@ relink "$1"
 exit 0
 fi
 
-find -P "${1:-.}" \( -name "$OP"\* -or -type l \) -exec "$0" - '{}' \;
+find "${1:-.}" \( -name "$OP"\* -or -type l \) -exec "$0" - '{}' \;
