@@ -181,13 +181,17 @@ echo \
 >> etc/passwd
 
 echo 'Creating favorites...'
+case "$DISTRO" in
+alpine) RUN_OPTS='&terminal_string=xterm-xfree86' ;;
+*) RUN_OPTS='' ;;
+esac
 UE_RUN="$("$TERMSH" uri-encode "\$DATA_DIR/$ROOTFS_DIR/run")"
 "$TERMSH" view -N -p "Root fav: $NAME" \
 -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
--u "local-terminal:/opts?execute=${UE_RUN}%200%3A0&name=$("$TERMSH" uri-encode "$NAME (root)")"
+-u "local-terminal:/opts?execute=${UE_RUN}%200%3A0&name=$("$TERMSH" uri-encode "$NAME (root)")$RUN_OPTS"
 "$TERMSH" view -N -p "User fav: $NAME" \
 -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
--u "local-terminal:/opts?execute=${UE_RUN}&name=$("$TERMSH" uri-encode "$NAME")"
+-u "local-terminal:/opts?execute=${UE_RUN}&name=$("$TERMSH" uri-encode "$NAME")$RUN_OPTS"
 echo
 echo 'Done, see notifications.'
 )
