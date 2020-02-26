@@ -4,6 +4,17 @@
 
 set -e
 
+# We can't simply use `()' to introduce newly exported TMPDIR to the shell in Android 10.
+_TMPDIR="$DATA_DIR/tmp"
+if [ "$_TMPDIR" != "$TMPDIR" ] ; then
+export TMPDIR="$_TMPDIR"
+mkdir -p "$TMPDIR"
+/system/bin/sh "$0" "$@"
+exit "$?"
+fi
+export TMPDIR
+mkdir -p "$TMPDIR"
+
 if [ "$1" = '-a' ] ; then
 NI=1
 shift
@@ -67,9 +78,6 @@ if [ -n "$SDK" -a "$SDK" -lt 21 ]
 then
 VARIANT='-pre5'
 fi
-
-export TMPDIR="$DATA_DIR/tmp"
-mkdir -p "$TMPDIR"
 
 to_minitar_arch() {
 case "$1" in
