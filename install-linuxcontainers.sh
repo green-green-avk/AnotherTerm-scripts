@@ -70,11 +70,10 @@ ROOTFS_DIR="$PROOTS/$NAME"
 MINITAR="$DATA_DIR/minitar"
 
 # There is no uname on old Androids.
-ARCH=$(uname -m 2>/dev/null || ( aa=($("$TERMSH" arch)) ; to_uname_arch "${aa[0]}" ))
+ARCH=$(uname -m 2>/dev/null || ( aa=($MY_DEVICE_ABIS) ; to_uname_arch "${aa[0]}" ))
 
 VARIANT=''
-SDK="$("$TERMSH" sdk)"
-if [ -n "$SDK" -a "$SDK" -lt 21 ]
+if [ -n "$MY_ANDROID_SDK" -a "$MY_ANDROID_SDK" -lt 21 ]
 then
 VARIANT='-pre5'
 fi
