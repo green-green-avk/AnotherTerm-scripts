@@ -46,7 +46,7 @@ cd "$PKG_NAME"
 make && make install
 
 echo 'Setting up LD_LIBRARY_PATH...'
-echo 'export LD_LIBRARY_PATH="/opt/libusb/lib:$LD_LIBRARY_PATH"' > /etc/profile.d/libusb.sh
+echo 'export LD_LIBRARY_PATH="/opt/libusb/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"' > /etc/profile.d/libusb.sh
 echo 'Done.'
 
 echo 'The libusb wrapper will work in newly started sessions. Enjoy!'
