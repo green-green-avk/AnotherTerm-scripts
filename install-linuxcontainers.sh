@@ -61,7 +61,7 @@ esac
 validate_arch() {
 case "$1" in
 armv7a|aarch64|i686|amd64) echo $1 ; return 0 ;;
-*) echo "$1" ; return 1 ;;
+*) return 1 ;;
 esac
 }
 
@@ -77,7 +77,7 @@ ROOTFS_DIR="$PROOTS/$NAME"
 MINITAR="$DATA_DIR/minitar"
 
 # There is no uname on old Androids.
-ARCH="$(validate_arch "$(uname -m 2>/dev/null || echo ?)" || ( aa=($MY_DEVICE_ABIS) ; to_uname_arch "${aa[0]}" ))"
+ARCH="$(validate_arch "$(uname -m 2>/dev/null)" || ( aa=($MY_DEVICE_ABIS) ; to_uname_arch "${aa[0]}" ))"
 
 VARIANT=''
 if [ -n "$MY_ANDROID_SDK" -a "$MY_ANDROID_SDK" -lt 21 ]
