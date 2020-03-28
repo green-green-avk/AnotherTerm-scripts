@@ -160,7 +160,13 @@ USER=${REG_USER@Q}
 SHELL=${FAV_SHELL@Q}
 
 # =======
-#PROOT_OPT_ARGS=('-b' '/data')
+
+# Mostly for Android < 5 now. Feel free to adjust.
+PROOT_OPT_ARGS=('-k' '4.18.0')
+
+# Uncomment to manipulate Android application own private data directory.
+#PROOT_OPT_ARGS+=('-b' '/data')
+
 # =======
 EOF
 "$TERMSH" cat \
