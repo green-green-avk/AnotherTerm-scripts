@@ -1,7 +1,7 @@
 #!/system/bin/sh
 
-# This script is supposed to be used with Another Term Lite.
-# See https://github.com/green-green-avk/AnotherTermLite/wiki
+# This script is supposed to be used with Another Term.
+# See https://github.com/green-green-avk/AnotherTerm/wiki
 # for `DATA_DIR', `LIB_DIR' and `TERMSH_UID' environment variables meaning.
 
 inc() {
