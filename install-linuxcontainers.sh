@@ -76,6 +76,50 @@ fi
 ROOTFS_DIR="$PROOTS/$NAME"
 MINITAR="$DATA_DIR/minitar"
 
+echo 'Creating favorites...'
+
+mkdir -p "$DATA_DIR/$ROOTFS_DIR"
+echo -e '#!/system/bin/sh\n\necho Installing... Try later.' > "$DATA_DIR/$ROOTFS_DIR/run"
+chmod 755 "$DATA_DIR/$ROOTFS_DIR/run"
+
+case "$DISTRO" in
+alpine) RUN_OPTS_TERM='xterm-xfree86' ;;
+*) RUN_OPTS_TERM='' ;;
+esac
+
+if [ -z "$NI" ] ; then
+
+if [ -n "$RUN_OPTS_TERM" ] ; then
+RUN_OPTS="&terminal_string=$RUN_OPTS_TERM"
+else
+RUN_OPTS=''
+fi
+UE_RUN="$("$TERMSH" uri-encode "\$DATA_DIR/$ROOTFS_DIR/run")"
+"$TERMSH" view \
+-r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
+-u "local-terminal:/opts?execute=${UE_RUN}%200%3A0&name=$("$TERMSH" uri-encode "$NAME (root)")$RUN_OPTS"
+"$TERMSH" view \
+-r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
+-u "local-terminal:/opts?execute=${UE_RUN}&name=$("$TERMSH" uri-encode "$NAME")$RUN_OPTS"
+
+else
+
+"$TERMSH" request-permission favmgmt 'Installer is going to create a regular user and a root launching favs.' \
+&& { FMPERM=1 ; } || [ $? -eq 3 ]
+if [ -n "$RUN_OPTS_TERM" ] ; then
+RUN_OPTS=(-t "$RUN_OPTS_TERM")
+else
+RUN_OPTS=()
+fi
+"$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME (root)" "\$DATA_DIR/$ROOTFS_DIR/run 0:0"
+"$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME" "\$DATA_DIR/$ROOTFS_DIR/run"
+[ -n FMPERM ] && { "$TERMSH" revoke-permission favmgmt ; unset FMPERM ; }
+
+fi
+
+echo 'Done.'
+
+
 # There is no uname on old Androids.
 ARCH="$(validate_arch "$(uname -m 2>/dev/null)" || ( aa=($MY_DEVICE_ABIS) ; to_uname_arch "${aa[0]}" ))"
 
@@ -199,19 +243,4 @@ cp -a etc/skel home/$REG_USER 2>/dev/null || mkdir -p home/$REG_USER
 echo \
 "$REG_USER:x:$USER_ID:$USER_ID:guest:/home/$REG_USER:$FAV_SHELL" \
 >> etc/passwd
-
-echo 'Creating favorites...'
-case "$DISTRO" in
-alpine) RUN_OPTS='&terminal_string=xterm-xfree86' ;;
-*) RUN_OPTS='' ;;
-esac
-UE_RUN="$("$TERMSH" uri-encode "\$DATA_DIR/$ROOTFS_DIR/run")"
-"$TERMSH" view -N -p "Root fav: $NAME" \
--r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
--u "local-terminal:/opts?execute=${UE_RUN}%200%3A0&name=$("$TERMSH" uri-encode "$NAME (root)")$RUN_OPTS"
-"$TERMSH" view -N -p "User fav: $NAME" \
--r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
--u "local-terminal:/opts?execute=${UE_RUN}&name=$("$TERMSH" uri-encode "$NAME")$RUN_OPTS"
-echo
-echo 'Done, see notifications.'
 )
