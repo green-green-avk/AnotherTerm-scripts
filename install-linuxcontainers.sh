@@ -3,6 +3,7 @@
 # Different linux rootfs archives from linuxcontainers.org install script.
 
 set -e
+trap 'exit 1' INT HUP QUIT TERM ALRM USR1
 
 # We can't simply use `()' to introduce newly exported TMPDIR to the shell in Android 10.
 _TMPDIR="$DATA_DIR/tmp"
@@ -105,7 +106,10 @@ UE_RUN="$("$TERMSH" uri-encode "\$DATA_DIR/$ROOTFS_DIR/run")"
 else
 
 "$TERMSH" request-permission favmgmt 'Installer is going to create a regular user and a root launching favs.' \
-&& { FMPERM=1 ; } || [ $? -eq 3 ]
+&& {
+finally() { "$TERMSH" revoke-permission favmgmt ; trap - EXIT ; unset finally ; }
+trap 'finally' EXIT
+} || [ $? -eq 3 ]
 if [ -n "$RUN_OPTS_TERM" ] ; then
 RUN_OPTS=(-t "$RUN_OPTS_TERM")
 else
@@ -113,7 +117,7 @@ RUN_OPTS=()
 fi
 "$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME (root)" "\$DATA_DIR/$ROOTFS_DIR/run 0:0"
 "$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME" "\$DATA_DIR/$ROOTFS_DIR/run"
-[ -n FMPERM ] && { "$TERMSH" revoke-permission favmgmt ; unset FMPERM ; }
+if typeset -f finally >/dev/null 2>&1 ; then finally ; fi
 
 fi
 
