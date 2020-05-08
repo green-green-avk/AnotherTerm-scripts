@@ -204,7 +204,10 @@ fi
 echo 'Setting up run script...'
 mkdir -p etc/proot
 cat << EOF > etc/proot/run.cfg
+# Regular user name
 USER=${REG_USER@Q}
+
+# Preferred shell (fallback: /bin/sh)
 SHELL=${FAV_SHELL@Q}
 
 # =======
@@ -214,6 +217,9 @@ SHELL=${FAV_SHELL@Q}
 # becouse of a random number generation API change at this point
 # as it could break libopenssl random number generation routine.
 PROOT_OPT_ARGS=('-k' '4.0.0')
+
+# Application data shared directory.
+PROOT_OPT_ARGS+=('-b' "$SHARED_DATA_DIR:/mnt/shared")
 
 # Uncomment to manipulate Android application own private data directory.
 #PROOT_OPT_ARGS+=('-b' '/data')
