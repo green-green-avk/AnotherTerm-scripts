@@ -4,6 +4,10 @@
 # See https://github.com/green-green-avk/AnotherTerm/wiki
 # for `DATA_DIR', `LIB_DIR' and `TERMSH_UID' environment variables meaning.
 
+# Arguments: [-u] [<uid>:<gid> [<command>]]
+# -u -- for PRoot UserLAnd flavor from
+#       https://github.com/green-green-avk/build-proot-android/tree/master/packages
+
 inc() {
 if [ -f "$1" ] ; then . "$1" ; fi
 }
