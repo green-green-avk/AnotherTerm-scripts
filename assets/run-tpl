@@ -33,6 +33,11 @@ PATH='/bin:/usr/bin'
 HOME="/home/$USER"
 PROOT_OPT_ARGS=("${PROOT_OPT_ARGS[@]}")
 
+if [ "$1" = '-u' ]
+then shift ; FV='-userland'
+else FV=
+fi
+
 if [ -n "$1" ] ; then
 	UG="--change-id=$1"
 	if [ "$1" = '0:0' ] ; then
@@ -42,6 +47,11 @@ if [ -n "$1" ] ; then
 		HOME='/root'
 	fi
 else UG=
+fi
+
+if [ -n "$2" ]
+then CMD=(-c "$2")
+else CMD=()
 fi
 
 if [ ! -x "$BASE_DIR/root/$SHELL" ] ; then SHELL="$FB_SHELL" ; fi
@@ -56,9 +66,9 @@ export TERMSH=termsh # Just for convenience.
 
 inc "$CFG_DIR/run.rc"
 
-"$DATA_DIR/root/bin/proot" -r "$BASE_DIR/root" $UG \
+"$DATA_DIR/root/bin/proot$FV" -r "$BASE_DIR/root" $UG \
 -b /dev -b /proc -b /sys -b /system -b /vendor -b /storage \
 -b "$LIB_DIR/libtermsh.so:/bin/termsh" \
 "${PROOT_OPT_ARGS[@]}" \
 --link2symlink -p -L --tcsetsf2tcsets \
--w "$HOME" "$SHELL" -l
+-w "$HOME" "$SHELL" -l "${CMD[@]}"
