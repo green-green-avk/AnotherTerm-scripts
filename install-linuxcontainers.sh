@@ -54,7 +54,7 @@ case "$1" in
 armeabi-v7a) echo armv7a ;;
 arm64-v8a) echo aarch64 ;;
 x86) echo i686 ;;
-x86_64) echo amd64 ;;
+amd64) echo x86_64 ;;
 *) echo "$1" ;;
 esac
 }
@@ -148,7 +148,7 @@ case "$1" in
 armv7a) echo armhf ;;
 aarch64) echo arm64 ;;
 i686) echo i386 ;;
-amd64) echo amd64 ;;
+x86_64) echo amd64 ;;
 *) echo "$1" ;;
 esac
 }
