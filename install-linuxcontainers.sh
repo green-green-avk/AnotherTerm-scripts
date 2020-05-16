@@ -77,6 +77,7 @@ fi
 ROOTFS_DIR="$PROOTS/$NAME"
 MINITAR="$DATA_DIR/minitar"
 
+
 echo 'Creating favorites...'
 
 mkdir -p "$DATA_DIR/$ROOTFS_DIR"
@@ -175,12 +176,18 @@ echo
 
 cd "$DATA_DIR"
 (
+
+
 echo 'Getting minitar...'
+
 "$TERMSH" cat \
 "https://raw.githubusercontent.com/green-green-avk/build-libarchive-minitar-android/master/prebuilt/$(to_minitar_arch "$ARCH")/minitar" \
 > "$MINITAR"
 chmod 755 "$MINITAR"
+
+
 echo 'Getting PRoot...'
+
 "$TERMSH" cat \
 "https://raw.githubusercontent.com/green-green-avk/build-proot-android/master/packages/proot-android-$ARCH$VARIANT.tar.gz" \
 | "$MINITAR"
@@ -189,6 +196,7 @@ mkdir -p "$ROOTFS_DIR/tmp"
 cd "$ROOTFS_DIR/root"
 echo 'Getting Linux root FS...'
 "$TERMSH" cat "$ROOTFS_URL" | "$MINITAR" || echo 'Possibly URL was changed: recheck on the site.' >&2
+
 
 if [ -z "$NI" ] ; then
 echo
@@ -201,7 +209,9 @@ prompt 'Preferred shell' "$FAV_SHELL" FAV_SHELL
 echo
 fi
 
+
 echo 'Setting up run script...'
+
 mkdir -p etc/proot
 cat << EOF > etc/proot/run.cfg
 # Regular user name
@@ -233,7 +243,9 @@ chmod 755 etc/proot/run
 rm -rf ../run
 ln -s root/etc/proot/run ../run # KitKat can only `ln -s'
 
+
 echo 'Configuring...'
+
 cat << EOF > etc/resolv.conf
 nameserver 8.8.8.8
 nameserver 8.8.4.4
@@ -257,3 +269,8 @@ echo \
 "$REG_USER:x:$USER_ID:$USER_ID:guest:/home/$REG_USER:$FAV_SHELL" \
 >> etc/passwd
 )
+
+
+echo
+echo 'Done!'
+echo
