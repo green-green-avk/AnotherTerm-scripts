@@ -3,7 +3,15 @@
 # Different linux rootfs archives from linuxcontainers.org install script.
 
 set -e
-trap 'exit 1' INT HUP QUIT TERM ALRM USR1
+
+###
+show_usage() {
+echo 'Usage:'
+echo "	$0 [-a] <distro> <release> [<target_subdir_name>]"
+echo '		-a -- non-interactive mode'
+echo
+}
+###
 
 # We can't simply use `()' to introduce newly exported TMPDIR to the shell in Android 10.
 _TMPDIR="$DATA_DIR/tmp"
@@ -16,6 +24,8 @@ fi
 export TMPDIR
 mkdir -p "$TMPDIR"
 
+trap 'exit 1' INT HUP QUIT TERM ALRM USR1
+
 if [ "$1" = '-a' ] ; then
 NI=1
 shift
@@ -24,9 +34,7 @@ NI=
 fi
 
 if [ -z "$1" -o -z "$2" ] ; then
-echo 'Usage:'
-echo "	$0 [-a] <distro> <release> [<target_subdir_name>]"
-echo
+show_usage
 exit 1
 fi
 
