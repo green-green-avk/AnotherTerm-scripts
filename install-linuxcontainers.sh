@@ -90,7 +90,7 @@ NAME="$NAME_B$NAME_S"
 ROOTFS_DIR="$PROOTS/$NAME"
 if [ ! -e "$DATA_DIR/$ROOTFS_DIR" ] ; then break ; fi
 NAME_C="$(($NAME_C+1))"
-NAME_S="-#$NAME_C"
+NAME_S="-$NAME_C"
 done
 
 echo -e "\nActual name: $NAME\n"
