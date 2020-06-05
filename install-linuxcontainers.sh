@@ -93,6 +93,8 @@ NAME_C="$(($NAME_C+1))"
 NAME_S="-#$NAME_C"
 done
 
+echo -e "\nActual name: $NAME\n"
+
 MINITAR="$DATA_DIR/minitar"
 
 
@@ -114,7 +116,7 @@ RUN_OPTS="&terminal_string=$RUN_OPTS_TERM"
 else
 RUN_OPTS=''
 fi
-UE_RUN="$("$TERMSH" uri-encode "\$DATA_DIR/$ROOTFS_DIR/run")"
+UE_RUN="$("$TERMSH" uri-encode "\"\$DATA_DIR/$ROOTFS_DIR/run\"")"
 "$TERMSH" view \
 -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
 -u "local-terminal:/opts?execute=${UE_RUN}%200%3A0&name=$("$TERMSH" uri-encode "$NAME (root)")$RUN_OPTS"
@@ -134,8 +136,8 @@ RUN_OPTS=(-t "$RUN_OPTS_TERM")
 else
 RUN_OPTS=()
 fi
-"$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME (root)" "\$DATA_DIR/$ROOTFS_DIR/run 0:0"
-"$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME" "\$DATA_DIR/$ROOTFS_DIR/run"
+"$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME (root)" "\"\$DATA_DIR/$ROOTFS_DIR/run\" 0:0"
+"$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME" "\"\$DATA_DIR/$ROOTFS_DIR/run\""
 if typeset -f finally >/dev/null 2>&1 ; then finally ; fi
 
 fi
@@ -289,6 +291,4 @@ echo \
 )
 
 
-echo
-echo 'Done!'
-echo
+echo -e '\nDone!\n'
