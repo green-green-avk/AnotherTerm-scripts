@@ -96,7 +96,7 @@ NAME_B="$NAME"
 while true ; do
 NAME="$NAME_B$NAME_S"
 ROOTFS_DIR="$PROOTS/$NAME"
-if mkdir "$DATA_DIR/$ROOTFS_DIR" ; then break ; fi
+if mkdir "$DATA_DIR/$ROOTFS_DIR" >/dev/null 2>&1 ; then break ; fi
 if [ "$NAME_C" -gt 100 ] ; then
 echo -e '\nSuspiciously many rootfses installed'
 exit 1
