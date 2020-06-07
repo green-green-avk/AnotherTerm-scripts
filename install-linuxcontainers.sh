@@ -106,7 +106,7 @@ NAME_S="-$NAME_C"
 done
 
 echo -e "\nActual name: $NAME\n"
-echo -e "To uninstall: run \`rm -rf \$DATA_DIR/$ROOTFS_DIR'\n"
+echo -e "To uninstall: run \`rm -rf \"\$DATA_DIR/$ROOTFS_DIR\"'\n"
 
 MINITAR="$DATA_DIR/minitar"
 
