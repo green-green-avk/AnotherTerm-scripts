@@ -74,6 +74,8 @@ armv7a|aarch64|i686|amd64) echo $1 ; return 0 ;;
 esac
 }
 
+validate_dir() { [ -d "$1" -a -r "$1" -a -w "$1" -a -x "$1" ] ; }
+
 PROOTS='proots'
 
 if [ -z "$NI" ] ; then
@@ -82,25 +84,35 @@ echo
 prompt "Installation subdir name $PROOTS/___" "$NAME" NAME
 fi
 
+mkdir -p "$DATA_DIR/$PROOTS"
+if ! validate_dir "$DATA_DIR/$PROOTS" ; then
+echo -e "\nUnable to create \$DATA_DIR/$PROOTS"
+exit 1
+fi
+
 NAME_C=1
 NAME_S=
 NAME_B="$NAME"
 while true ; do
 NAME="$NAME_B$NAME_S"
 ROOTFS_DIR="$PROOTS/$NAME"
-if [ ! -e "$DATA_DIR/$ROOTFS_DIR" ] ; then break ; fi
+if mkdir "$DATA_DIR/$ROOTFS_DIR" ; then break ; fi
+if [ "$NAME_C" -gt 100 ] ; then
+echo -e '\nSuspiciously many rootfses installed'
+exit 1
+fi
 NAME_C="$(($NAME_C+1))"
 NAME_S="-$NAME_C"
 done
 
 echo -e "\nActual name: $NAME\n"
+echo -e "To uninstall: run \`rm -rf \$DATA_DIR/$ROOTFS_DIR'\n"
 
 MINITAR="$DATA_DIR/minitar"
 
 
 echo 'Creating favorites...'
 
-mkdir -p "$DATA_DIR/$ROOTFS_DIR"
 echo -e '#!/system/bin/sh\n\necho Installing... Try later.' > "$DATA_DIR/$ROOTFS_DIR/run"
 chmod 755 "$DATA_DIR/$ROOTFS_DIR/run"
 
