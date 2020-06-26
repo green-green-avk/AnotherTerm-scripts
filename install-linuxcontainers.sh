@@ -209,10 +209,12 @@ echo
 cd "$DATA_DIR"
 (
 
+OO="$([ -t 2 ] && echo --progress)"
+
 
 echo 'Getting minitar...'
 
-"$TERMSH" cat \
+"$TERMSH" cat $OO \
 "https://raw.githubusercontent.com/green-green-avk/build-libarchive-minitar-android/master/prebuilt/$(to_minitar_arch "$ARCH")/minitar" \
 > "$MINITAR"
 chmod 755 "$MINITAR"
@@ -220,14 +222,19 @@ chmod 755 "$MINITAR"
 
 echo 'Getting PRoot...'
 
-"$TERMSH" cat \
+"$TERMSH" cat $OO \
 "https://raw.githubusercontent.com/green-green-avk/build-proot-android/master/packages/proot-android-$ARCH$VARIANT.tar.gz" \
 | "$MINITAR"
+
+
 mkdir -p "$ROOTFS_DIR/root"
 mkdir -p "$ROOTFS_DIR/tmp"
 cd "$ROOTFS_DIR/root"
+
+
 echo 'Getting Linux root FS...'
-"$TERMSH" cat "$ROOTFS_URL" | "$MINITAR" || echo 'Possibly URL was changed: recheck on the site.' >&2
+
+"$TERMSH" cat $OO "$ROOTFS_URL" | "$MINITAR" || echo 'Possibly URL was changed: recheck on the site.' >&2
 
 
 if [ -z "$NI" ] ; then
@@ -268,7 +275,7 @@ PROOT_OPT_ARGS+=('-b' "$SHARED_DATA_DIR:/mnt/shared")
 
 # =======
 EOF
-"$TERMSH" cat \
+"$TERMSH" cat $OO \
 'https://raw.githubusercontent.com/green-green-avk/AnotherTerm-scripts/master/assets/run-tpl' \
 > etc/proot/run
 chmod 755 etc/proot/run
