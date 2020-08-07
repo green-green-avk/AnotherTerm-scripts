@@ -13,7 +13,7 @@ if [ -f "$1" ] ; then . "$1" ; fi
 }
 
 BASE_DIR="${0%/*}" # Old Androids could not have `dirname'.
-CFG_DIR="$(readlink "$0" || echo 'root/etc/proot/run')" # API < 19 could not have `readlink'.
+CFG_DIR="$(readlink "$0" 2>/dev/null || echo 'root/etc/proot/run')" # API < 19 could not have `readlink'.
 CFG_DIR="$BASE_DIR/${CFG_DIR%/*}"
 
 export TERMSH_UID="$USER_ID" # "$(id -u)" does not work for old Androids.
