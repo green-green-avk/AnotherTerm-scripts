@@ -44,6 +44,16 @@ NAME="${3:-"linuxcontainers-$DISTRO-$RELEASE"}"
 REG_USER="${REG_USER:-my_acct}"
 FAV_SHELL="${FAV_SHELL:-/bin/bash}"
 
+find_prefix() { # Old Androids have no `grep'.
+local L
+while read -r L ; do
+case $L in
+$1*) echo "$L" ; return 0 ;;
+esac
+done
+return 1
+}
+
 exit_with() {
 echo "$@" >&2
 exit 1
@@ -190,7 +200,7 @@ to_lco_link() {
 local R
 local P
 R="$( { "$TERMSH" cat 'https://us.images.linuxcontainers.org/meta/1.0/index-user' || exit_with 'Cannot download index from linuxcontainers.org' ;} \
-| { grep -e "^$DISTRO;$RELEASE;$(to_lco_arch "$1");default;" || exit_with 'Cannot find specified rootfs' ;} )" || exit 1
+| { find_prefix "$DISTRO;$RELEASE;$(to_lco_arch "$1");default;" || exit_with 'Cannot find specified rootfs' ;} )" || exit 1
 P="${R##*;}"
 echo "https://us.images.linuxcontainers.org/$P/rootfs.tar.xz"
 }
@@ -279,8 +289,8 @@ EOF
 'https://raw.githubusercontent.com/green-green-avk/AnotherTerm-scripts/master/assets/run-tpl' \
 > etc/proot/run
 chmod 755 etc/proot/run
-rm -rf ../run
-ln -s root/etc/proot/run ../run # KitKat can only `ln -s'
+rm -r ../run 2>/dev/null || true # Jelly Bean has no `-f' option (API 16 at least).
+ln -s root/etc/proot/run ../run # KitKat can only `ln -s'.
 
 
 echo 'Configuring...'
