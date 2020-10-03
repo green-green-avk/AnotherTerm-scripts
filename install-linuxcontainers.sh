@@ -278,7 +278,7 @@ SHELL=${FAV_SHELL@Q}
 PROOT_OPT_ARGS+=('-k' '4.0.0')
 
 # Application data shared directory.
-PROOT_OPT_ARGS+=('-b' "$SHARED_DATA_DIR:/mnt/shared")
+PROOT_OPT_ARGS+=('-b' "\$SHARED_DATA_DIR:/mnt/shared")
 
 # Uncomment to manipulate Android application own private data directory.
 #PROOT_OPT_ARGS+=('-b' '/data')
