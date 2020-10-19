@@ -12,6 +12,8 @@ inc() {
 if [ -f "$1" ] ; then . "$1" ; fi
 }
 
+TERMSH="$LIB_DIR/libtermsh.so"
+
 BASE_DIR="${0%/*}" # Old Androids could not have `dirname'.
 CFG_DIR="$(readlink "$0" 2>/dev/null || echo 'root/etc/proot/run')" # API < 19 could not have `readlink'.
 CFG_DIR="$BASE_DIR/${CFG_DIR%/*}"
@@ -35,11 +37,13 @@ SHELL=${SHELL:-/bin/bash}
 FB_SHELL='/bin/sh'
 PATH='/bin:/usr/bin'
 HOME="/home/$USER"
+PROOT="${PROOT:-$DATA_DIR/root/bin/proot}"
+PROOT_USERLAND="${PROOT_USERLAND:-$DATA_DIR/root/bin/proot-userland}"
 PROOT_OPT_ARGS=("${PROOT_OPT_ARGS[@]}")
 
 if [ "$1" = '-u' ]
-then shift ; FV='-userland'
-else FV=
+then shift ; PROOT_F="$PROOT_USERLAND"
+else PROOT_F="$PROOT"
 fi
 
 if [ -n "$1" ] ; then
@@ -70,7 +74,7 @@ export TERMSH=termsh # Just for convenience.
 
 inc "$CFG_DIR/run.rc"
 
-"$DATA_DIR/root/bin/proot$FV" -r "$BASE_DIR/root" $UG \
+"$PROOT_F" -r "$BASE_DIR/root" $UG \
 -b /dev -b /proc -b /sys -b /system -b /vendor -b /storage \
 $([ -d /apex ] && echo -b /apex ) \
 -b "$LIB_DIR/libtermsh.so:/bin/termsh" \

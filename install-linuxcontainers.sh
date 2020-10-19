@@ -7,9 +7,16 @@ set -e
 ###
 show_usage() {
 echo 'Usage:'
-echo "	$0 [-a] <distro> <release> [<target_subdir_name>]"
+echo "	$0 [-a] [-d] <distro> <release> [<target_subdir_name>]"
 echo '		-a -- non-interactive mode'
+echo '		-d -- do not use minitar and PRoot from a plugin if present'
 echo
+echo 'Variables:'
+echo '  REG_USER - user account name; default:' "$REG_USER"
+echo '  FAV_SHELL - preferable shell; default:' "$FAV_SHELL" '(fallback: /bin/sh)'
+echo '  PROOT - proot location; default: <auto>'
+echo '  PROOT_USERLAND - proot userland flavor location; default: <auto>'
+echo '  ESSENTIALS_PKG - Application ID of a minitar and PRoot plugin to check; default:' "$ESSENTIALS"
 }
 ###
 
@@ -26,6 +33,8 @@ mkdir -p "$TMPDIR"
 
 trap 'exit 1' INT HUP QUIT TERM ALRM USR1
 
+TERMSH="$LIB_DIR/libtermsh.so"
+
 if [ "$1" = '-a' ] ; then
 NI=1
 shift
@@ -33,16 +42,19 @@ else
 NI=
 fi
 
-if [ -z "$1" -o -z "$2" ] ; then
-show_usage
-exit 1
-fi
-
 DISTRO="$1"
 RELEASE="$2"
 NAME="${3:-"linuxcontainers-$DISTRO-$RELEASE"}"
 REG_USER="${REG_USER:-my_acct}"
 FAV_SHELL="${FAV_SHELL:-/bin/bash}"
+PROOT="${PROOT:-'$DATA_DIR/root/bin/proot'}"
+PROOT_USERLAND="${PROOT:-'$DATA_DIR/root/bin/proot-userland'}"
+ESSENTIALS="${ESSENTIALS_PKG:-green_green_avk.anothertermshellplugin_android10essentials}"
+
+if [ -z "$1" -o -z "$2" ] ; then
+show_usage
+exit 1
+fi
 
 find_prefix() { # Old Androids have no `grep'.
 local L
@@ -131,6 +143,8 @@ alpine) RUN_OPTS_TERM='xterm-xfree86' ;;
 *) RUN_OPTS_TERM='' ;;
 esac
 
+RUN="/system/bin/sh \"\$DATA_DIR/$ROOTFS_DIR/run\""
+
 if [ -z "$NI" ] ; then
 
 if [ -n "$RUN_OPTS_TERM" ] ; then
@@ -138,7 +152,7 @@ RUN_OPTS="&terminal_string=$RUN_OPTS_TERM"
 else
 RUN_OPTS=''
 fi
-UE_RUN="$("$TERMSH" uri-encode "\"\$DATA_DIR/$ROOTFS_DIR/run\"")"
+UE_RUN="$("$TERMSH" uri-encode "$RUN")"
 "$TERMSH" view \
 -r 'green_green_avk.anotherterm.FavoriteEditorActivity' \
 -u "local-terminal:/opts?execute=${UE_RUN}%200%3A0&name=$("$TERMSH" uri-encode "$NAME (root)")$RUN_OPTS"
@@ -158,8 +172,8 @@ RUN_OPTS=(-t "$RUN_OPTS_TERM")
 else
 RUN_OPTS=()
 fi
-"$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME (root)" "\"\$DATA_DIR/$ROOTFS_DIR/run\" 0:0"
-"$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME" "\"\$DATA_DIR/$ROOTFS_DIR/run\""
+"$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME (root)" "$RUN 0:0"
+"$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME" "$RUN"
 if typeset -f finally >/dev/null 2>&1 ; then finally ; fi
 
 fi
@@ -222,6 +236,12 @@ cd "$DATA_DIR"
 OO="$([ -t 2 ] && echo --progress)"
 
 
+# = Essentials =
+if E_MINITAR="$("$TERMSH" plugin "$ESSENTIALS" minitar)" 2>/dev/null
+then MINITAR="$E_MINITAR"
+# ===
+else
+
 echo 'Getting minitar...'
 
 "$TERMSH" cat $OO \
@@ -229,12 +249,24 @@ echo 'Getting minitar...'
 > "$MINITAR"
 chmod 755 "$MINITAR"
 
+fi
+
+
+# = Essentials =
+if E_PROOT="$("$TERMSH" plugin "$ESSENTIALS" proot)" 2>/dev/null
+then
+PROOT="\$(\"\$TERMSH\" plugin '$ESSENTIALS' proot)"
+PROOT_USERLAND="\$(\"\$TERMSH\" plugin '$ESSENTIALS' proot-userland)" || true
+# ===
+else
 
 echo 'Getting PRoot...'
 
 "$TERMSH" cat $OO \
 "https://raw.githubusercontent.com/green-green-avk/build-proot-android/master/packages/proot-android-$ARCH$VARIANT.tar.gz" \
 | "$MINITAR"
+
+fi
 
 
 mkdir -p "$ROOTFS_DIR/root"
@@ -270,6 +302,9 @@ USER=${REG_USER@Q}
 SHELL=${FAV_SHELL@Q}
 
 # =======
+
+PROOT=$PROOT
+PROOT_USERLAND=$PROOT_USERLAND
 
 # Mostly for Android < 5 now. Feel free to adjust.
 # Not recommended to set it >= '4.8.0' for kernels < '4.8.0'
