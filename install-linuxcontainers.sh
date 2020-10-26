@@ -239,7 +239,7 @@ OO="$([ -t 2 ] && echo --progress)"
 # = Essentials =
 if E_MINITAR="$("$TERMSH" plugin "$ESSENTIALS" minitar)" 2>/dev/null
 then MINITAR="$E_MINITAR"
-# ===
+# ==============
 else
 
 echo 'Getting minitar...'
@@ -257,7 +257,7 @@ if E_PROOT="$("$TERMSH" plugin "$ESSENTIALS" proot)" 2>/dev/null
 then
 PROOT="\$(\"\$TERMSH\" plugin '$ESSENTIALS' proot)"
 PROOT_USERLAND="\$(\"\$TERMSH\" plugin '$ESSENTIALS' proot-userland)" || true
-# ===
+# ==============
 else
 
 echo 'Getting PRoot...'
@@ -267,6 +267,18 @@ echo 'Getting PRoot...'
 | "$MINITAR"
 
 fi
+
+
+# = Test =
+[ -n "$MY_ANDROID_SDK" -a "$MY_ANDROID_SDK" -ge 29 \
+-a -n "$APP_TARGET_SDK" -a "$APP_TARGET_SDK" -ge 29 ] \
+&& { "$PROOT" --help > /dev/null 2>&1 || \
+exit_with "$(
+echo 'Current PRoot version does not start.'
+echo "Your Android version is 10 (API 29) or higher and this Another Term version targets API $APP_TARGET_SDK."
+echo 'See https://green-green-avk.github.io/AnotherTerm-docs/local-shell-w-x.html#main_content'
+)" ; } || true
+# ========
 
 
 mkdir -p "$ROOTFS_DIR/root"
