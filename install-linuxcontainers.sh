@@ -172,8 +172,8 @@ RUN_OPTS=(-t "$RUN_OPTS_TERM")
 else
 RUN_OPTS=()
 fi
-"$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME (root)" "$RUN 0:0"
-"$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME" "$RUN"
+"$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME (root)" "$RUN 0:0" > /dev/null
+"$TERMSH" create-shell-favorite "${RUN_OPTS[@]}" "$NAME" "$RUN" > /dev/null
 if typeset -f finally >/dev/null 2>&1 ; then finally ; fi
 
 fi
