@@ -322,15 +322,17 @@ PROOT_USERLAND=$PROOT_USERLAND
 # Not recommended to set it >= '4.8.0' for kernels < '4.8.0'
 # becouse of a random number generation API change at this point
 # as it could break libopenssl random number generation routine.
-PROOT_OPT_ARGS+=('-k' '4.0.0')
+_KERNEL_VERSION="$(uname -r || echo 0)"
+if [ "\${_KERNEL_VERSION%%.*}" -lt 4 ] ; then
+ PROOT_OPT_ARGS+=('-k' '4.0.0')
+fi
 
 # Android >= 9 can have a read restictiction
 # on '/proc/version'.
 cat /proc/version >/dev/null 2>&1 || {
  _PROC_VERSION="\$CFG_DIR/proc.version.cfg"
- if [ -e "\$_PROC_VERSION" ] ; then
-  PROOT_OPT_ARGS+=('-b' "\$_PROC_VERSION:/proc/version")
- fi
+ { uname -a || echo 'Linux' ; } > "\$_PROC_VERSION"
+ PROOT_OPT_ARGS+=('-b' "\$_PROC_VERSION:/proc/version")
 }
 
 # Application data shared directory.
@@ -341,9 +343,6 @@ PROOT_OPT_ARGS+=('-b' "\$SHARED_DATA_DIR:/mnt/shared")
 
 # =======
 EOF
-cat /proc/version >/dev/null 2>&1 || {
- uname -a || echo 'Linux'
-} > etc/proot/proc.version.cfg
 "$TERMSH" cat $OO \
 'https://raw.githubusercontent.com/green-green-avk/AnotherTerm-scripts/master/assets/run-tpl' \
 > etc/proot/run
