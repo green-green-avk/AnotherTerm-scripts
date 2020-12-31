@@ -322,7 +322,7 @@ PROOT_USERLAND=$PROOT_USERLAND
 # Not recommended to set it >= '4.8.0' for kernels < '4.8.0'
 # becouse of a random number generation API change at this point
 # as it could break libopenssl random number generation routine.
-_KERNEL_VERSION="$(uname -r || echo 0)"
+_KERNEL_VERSION="$(uname -r 2>/dev/null || echo 0)"
 if [ "\${_KERNEL_VERSION%%.*}" -lt 4 ] ; then
  PROOT_OPT_ARGS+=('-k' '4.0.0')
 fi
@@ -331,7 +331,7 @@ fi
 # on '/proc/version'.
 cat /proc/version >/dev/null 2>&1 || {
  _PROC_VERSION="\$CFG_DIR/proc.version.cfg"
- { uname -a || echo 'Linux' ; } > "\$_PROC_VERSION"
+ { uname -a 2>/dev/null || echo 'Linux' ; } > "\$_PROC_VERSION"
  PROOT_OPT_ARGS+=('-b' "\$_PROC_VERSION:/proc/version")
 }
 
