@@ -17,6 +17,7 @@ echo '  FAV_SHELL - preferable shell; default:' "$FAV_SHELL" '(fallback: /bin/sh
 echo '  PROOT - proot location; default: <auto>'
 echo '  PROOT_USERLAND - proot userland flavor location; default: <auto>'
 echo '  ESSENTIALS_PKG - Application ID of a minitar and PRoot plugin to check; default:' "$ESSENTIALS"
+echo '  ROOTFS_URL - override root FS source URL'
 }
 ###
 
@@ -225,7 +226,9 @@ echo "Variant: $VARIANT"
 echo "Root FS: $DISTRO $RELEASE"
 echo
 
+if [ -z "$ROOTFS_URL" ] ; then
 ROOTFS_URL="$(to_lco_link "$ARCH")"
+fi
 
 echo "Source: $ROOTFS_URL"
 echo
