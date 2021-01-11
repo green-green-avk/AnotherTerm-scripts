@@ -106,4 +106,4 @@ export ROOTFS_URL="https://us.images.linuxcontainers.org/${ARGS[2]}/rootfs.tar.x
 S='install-linuxcontainers.sh'
 "$TERMSH" copy -f -fu \
 "https://raw.githubusercontent.com/green-green-avk/AnotherTerm-scripts/master/$S" \
--tp . && chmod 755 $S && sh "./$S" -a ${ARGS[0]} ${ARGS[1]}
+-tp . && chmod 755 "$S" && sh "./$S" -a "${ARGS[0]}" "${ARGS[1]}"
