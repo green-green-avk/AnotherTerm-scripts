@@ -61,7 +61,7 @@ esac
 
 # There is no uname on old Androids.
 U_ARCH="$(validate_arch "$(uname -m 2>/dev/null)" || ( aa=($MY_DEVICE_ABIS) ; to_uname_arch "${aa[0]}" ))"
-R_ARCH=$(to_lco_arch "$U_ARCH")
+R_ARCH="$(to_lco_arch "$U_ARCH")"
 
 echo "$U_ARCH"
 
