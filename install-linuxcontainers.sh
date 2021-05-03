@@ -356,6 +356,14 @@ ln -s root/etc/proot/run ../run # KitKat can only `ln -s'.
 
 echo 'Configuring...'
 
+cat << EOF > bin/termsh
+#!/bin/sh
+
+unset LD_PRELOAD
+unset LD_LIBRARY_PATH
+/bin/_termsh "$@"
+EOF
+
 cat << EOF > etc/resolv.conf
 nameserver 8.8.8.8
 nameserver 8.8.4.4
