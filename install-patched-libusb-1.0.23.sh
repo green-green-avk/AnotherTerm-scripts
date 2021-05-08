@@ -37,16 +37,16 @@ exit 0
 
 mkdir -p build
 cd build
-PKG_NAME=libusb-1.0.23-android-helper-service-patch
+PKG_NAME='libusb-1.0.23-android-helper-service-patch'
 git clone "https://github.com/green-green-avk/$PKG_NAME"
 cd "$PKG_NAME"
 
 ./bootstrap.sh
-./configure --prefix=/opt/libusb --enable-android-helper=$APP_ID.libusb
+./configure --prefix='/opt/libusb' --enable-android-helper="$APP_ID.libusb"
 make && make install
 
 echo 'Setting up LD_LIBRARY_PATH...'
 echo 'export LD_LIBRARY_PATH="/opt/libusb/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"' > /etc/profile.d/libusb.sh
 echo 'Done.'
-
+echo
 echo 'The libusb wrapper will work in newly started sessions. Enjoy!'
