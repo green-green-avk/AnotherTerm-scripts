@@ -50,6 +50,6 @@ install -D 'libandroid-shmem.so' '/opt/shm/lib/libandroid-shmem.so'
 
 echo 'To use:'
 echo 'Just set your LD_PRELOAD when required similar to:'
-echo 'export LD_PRELOAD="/opt/shm/lib${LD_PRELOAD:+:$LD_PRELOAD}"'
+echo 'export LD_PRELOAD="/opt/shm/lib/libandroid-shmem.so${LD_PRELOAD:+:$LD_PRELOAD}"'
 echo
 echo 'Enjoy!'
