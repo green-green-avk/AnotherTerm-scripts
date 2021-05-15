@@ -3,4 +3,5 @@ Useful scripts for [Another Term](https://github.com/green-green-avk/AnotherTerm
 
 See:
 * <https://green-green-avk.github.io/AnotherTerm-docs/installing-linux-under-proot.html>
+* <https://green-green-avk.github.io/AnotherTerm-docs/installing-sysv-shmem-for-nonrooted-android.html>
 * <https://green-green-avk.github.io/AnotherTerm-docs/installing-libusb-for-nonrooted-android.html>
