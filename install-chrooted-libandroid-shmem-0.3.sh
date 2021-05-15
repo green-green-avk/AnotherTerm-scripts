@@ -10,6 +10,16 @@
 # Targeted for any distro with **apt**, **apk** and **yum** at the moment.
 # To be tested...
 
+# Warning:
+# It will not work on Android 10
+# with anything that targets Android 10.
+# See https://developer.android.com/about/versions/10/behavior-changes-10#shared-memory
+# Another Term flavors:
+# * Default (Google Play) and `.redist` - target Android 10;
+# * `.oldgood` - targets Android 9.
+#
+# The solution is in progress...
+
 set -e
 
 if [ $(id -u) -ne 0 ]
