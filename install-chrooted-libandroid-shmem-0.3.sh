@@ -18,7 +18,8 @@
 # * Default (Google Play) and `.redist` - target Android 10;
 # * `.oldgood` - targets Android 9.
 #
-# The solution is in progress...
+# Resolved in
+# https://github.com/green-green-avk/AnotherTerm-scripts/blob/master/install-libwrapdroid.sh
 
 set -e
 
