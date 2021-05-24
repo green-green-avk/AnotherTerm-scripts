@@ -49,8 +49,8 @@ make PREFIX=/opt/shm install
 
 echo 'To use:'
 echo 'Just set your environment variables when required similar to:'
-echo -e 'export LIBWRAPDROID_SOCKET_NAME=\e[1m<some_socket_name>\e[0m'
-echo -e 'export LIBWRAPDROID_AUTH_KEY=\e[1m<some_auth_key>\e[0m # 16 hex digits min'
+echo -e 'export LIBWRAPDROID_SOCKET_NAME=\e[1m<some-socket-name>\e[0m'
+echo -e 'export LIBWRAPDROID_AUTH_KEY=\e[1m<some-auth-key>\e[0m # not less than 16 hexidecimal digits'
 echo 'export LD_PRELOAD="/opt/shm/lib/libwrapdroid-shm-sysv.so:/opt/shm/lib/libwrapdroid-shm-posix.so${LD_PRELOAD:+:$LD_PRELOAD}"'
 echo 'and run /opt/shm/bin/libwrapdroid-server'
 echo
