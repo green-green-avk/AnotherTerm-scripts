@@ -13,7 +13,8 @@ set -e
 
 if [ $(id -u) -ne 0 ]
 then
-echo 'Should be run as root!' >&2
+echo 'It should be run as root!' >&2
+echo '(Emulated by PRoot)' >&2
 exit 1
 fi
 
