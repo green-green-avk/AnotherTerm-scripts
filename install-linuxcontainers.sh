@@ -364,6 +364,8 @@ unset LD_LIBRARY_PATH
 /bin/_termsh "$@"
 EOF
 
+chmod 700 bin/termsh
+
 cat << EOF > etc/resolv.conf
 nameserver 8.8.8.8
 nameserver 8.8.4.4
