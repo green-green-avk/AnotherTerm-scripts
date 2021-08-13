@@ -361,7 +361,7 @@ cat << EOF > bin/termsh
 
 unset LD_PRELOAD
 unset LD_LIBRARY_PATH
-/bin/_termsh "$@"
+/bin/_termsh "\$@"
 EOF
 
 chmod 700 bin/termsh
