@@ -310,6 +310,8 @@ echo 'Setting up run script...'
 
 mkdir -p etc/proot
 cat << EOF > etc/proot/run.cfg
+# Main configuration
+
 # Regular user name
 USER=${REG_USER@Q}
 
@@ -345,6 +347,14 @@ PROOT_OPT_ARGS+=('-b' "\$SHARED_DATA_DIR:/mnt/shared")
 #PROOT_OPT_ARGS+=('-b' '/data')
 
 # =======
+EOF
+cat << EOF > etc/proot/run.rc
+# Right before proot starting
+
+if ! is_root
+then
+ PROOT_OPT_ARGS+=('--mute-setxid') # 'make' should be happy now...
+fi
 EOF
 "$TERMSH" cat $OO \
 'https://raw.githubusercontent.com/green-green-avk/AnotherTerm-scripts/master/assets/run-tpl' \

@@ -9,7 +9,7 @@
 #       https://github.com/green-green-avk/build-proot-android/tree/master/packages
 
 inc() {
-if [ -f "$1" ] ; then . "$1" ; fi
+	if [ -f "$1" ] ; then . "$1" ; fi
 }
 
 TERMSH="$LIB_DIR/libtermsh.so"
@@ -41,9 +41,17 @@ PROOT="${PROOT:-$DATA_DIR/root/bin/proot}"
 PROOT_USERLAND="${PROOT_USERLAND:-$DATA_DIR/root/bin/proot-userland}"
 PROOT_OPT_ARGS=("${PROOT_OPT_ARGS[@]}")
 
+if [ "$1" = '-v' ]
+then shift ; PROOT_OPT_ARGS+=('-v' "$1") ; shift
+fi
+
 if [ "$1" = '-u' ]
 then shift ; PROOT_F="$PROOT_USERLAND"
 else PROOT_F="$PROOT"
+fi
+
+if [ "$1" = '--kill-on-exit' ]
+then shift ; PROOT_OPT_ARGS+=('--kill-on-exit')
 fi
 
 if [ -n "$1" ] ; then
@@ -57,8 +65,12 @@ if [ -n "$1" ] ; then
 else UG=
 fi
 
+is_root() {
+	[ -n "$UG" ]
+}
+
 if [ -n "$2" ]
-then CMD=(-c "$2")
+then CMD=('-c' "$2")
 else CMD=()
 fi
 
