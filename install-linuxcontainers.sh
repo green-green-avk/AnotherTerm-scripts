@@ -214,10 +214,10 @@ esac
 to_lco_link() {
 local R
 local P
-R="$( { "$TERMSH" cat 'https://us.images.linuxcontainers.org/meta/1.0/index-user' || exit_with 'Cannot download index from linuxcontainers.org' ;} \
+R="$( { "$TERMSH" cat 'https://images.linuxcontainers.org/meta/1.0/index-user' || exit_with 'Cannot download index from linuxcontainers.org' ;} \
 | { find_prefix "$DISTRO;$RELEASE;$(to_lco_arch "$1");default;" || exit_with 'Cannot find specified rootfs' ;} )" || exit 1
 P="${R##*;}"
-echo "https://us.images.linuxcontainers.org/$P/rootfs.tar.xz"
+echo "https://images.linuxcontainers.org/$P/rootfs.tar.xz"
 }
 
 echo

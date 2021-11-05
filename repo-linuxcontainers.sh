@@ -96,12 +96,12 @@ chooser() {
 }
 
 ARGS=($("$TERMSH" cat \
-https://us.images.linuxcontainers.org/meta/1.0/index-user \
+https://images.linuxcontainers.org/meta/1.0/index-user \
 | chooser))
 
 if [ -z "$ARGS" ] ; then exit 0 ; fi
 
-export ROOTFS_URL="https://us.images.linuxcontainers.org/${ARGS[2]}/rootfs.tar.xz"
+export ROOTFS_URL="https://images.linuxcontainers.org/${ARGS[2]}/rootfs.tar.xz"
 
 S='install-linuxcontainers.sh'
 "$TERMSH" copy -f -fu \
