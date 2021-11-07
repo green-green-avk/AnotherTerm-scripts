@@ -36,6 +36,17 @@ trap 'exit 1' INT HUP QUIT TERM ALRM USR1
 
 TERMSH="$LIB_DIR/libtermsh.so"
 
+# === Locale ===
+if [ -z "$LANG" ] ; then
+  export LANG='en_US.UTF-8'
+else
+  case "$LANG" in
+    *.utf*|*.UTF*) ;;
+    *) export LANG="${LANG%.*}.UTF-8" ;;
+  esac
+fi
+# ===        ===
+
 if [ "$1" = '-a' ] ; then
 NI=1
 shift
