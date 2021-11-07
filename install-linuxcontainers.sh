@@ -387,7 +387,7 @@ EOF
 
 chmod 700 bin/termsh
 
-rm etc/resolv.conf # Ubuntu Focal
+rm -r etc/resolv.conf 2>/dev/null || true # Ubuntu Focal
 cat << EOF > etc/resolv.conf
 nameserver 8.8.8.8
 nameserver 8.8.4.4
