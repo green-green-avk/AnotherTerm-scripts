@@ -1,5 +1,7 @@
 # **Xwayland** startup scripts with international keyboard and clipboard support
 
+Details: <https://green-green-avk.github.io/AnotherTerm-docs/graphical-sessions.html#how-to-use>
+
 ## Usage
 
 Minimal Another&nbsp;Term version: <kbd>MkIV-dev16</kbd>
@@ -29,3 +31,5 @@ Under your prooted environment:
 "$DATA_DIR/proots/linuxcontainers-debian-buster/run" \
 '' ./wlstart-WM
 ```
+
+Just replace the `linuxcontainers-debian-buster` with your installation directory.
