@@ -1,0 +1,12 @@
+#!/bin/bash
+
+read -r pid
+read -r RES_UUID
+read -r RES_AUTH
+read -r display
+export RES_UUID
+export RES_AUTH
+export DISPLAY=":$display"
+~/startwm </dev/tty >/dev/tty 2>&1
+echo "stopping X at PID $pid..."
+kill "$pid"

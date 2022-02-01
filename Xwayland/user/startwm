@@ -1,0 +1,17 @@
+#!/bin/bash
+
+WM=startxfce4
+#WM=icewm
+
+export LIBWRAPDROID_SOCKET_NAME="$APP_ID.reswrap.$RES_UUID"
+export LIBWRAPDROID_AUTH_KEY="$RES_AUTH"
+/opt/shm/bin/libwrapdroid-server &
+WRAPDROID_PID=$!
+/opt/Xutils/bin/wl-helper "$RES_AUTH" &
+WLHELPER_PID=$!
+
+LD_PRELOAD=/opt/shm/lib/libwrapdroid-shm-sysv.so:/opt/shm/lib/libwrapdroid-shm-posix.so "$WM"
+
+killall -wq gpg-agent ssh-agent xscreensaver xiccd
+kill $WLHELPER_PID
+kill $WRAPDROID_PID

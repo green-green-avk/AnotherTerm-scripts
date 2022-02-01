@@ -1,0 +1,213 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import socket
+import uuid
+import threading
+import re
+
+from Xlib import X, display as Xdisplay, Xutil, Xatom
+from Xlib.protocol import event as Xevent
+
+import subprocess
+
+wl_sock = "\0" + os.environ["APP_ID"] + ".wlterm"
+
+wl_helper_obj_id = 2
+
+def log(v):
+ print(f"Helper: {v}")
+
+def put_th(data, sel_name):
+ d = Xdisplay.Display()
+ try:
+
+  sel_atom = d.get_atom(sel_name)
+  targets_atom = d.get_atom('TARGETS')
+  types = {d.get_atom(t):v for t, v in data.items()}
+  w = d.screen().root.create_window(-10, -10, 1, 1, 0, X.CopyFromParent)
+  w.set_wm_name(f'Android {sel_name} clipboard paste helper')
+  w.set_selection_owner(sel_atom, X.CurrentTime)
+  if d.get_selection_owner(sel_atom) != w:
+   return
+  while True:
+   e = d.next_event()
+   if (e.type == X.SelectionRequest
+       and e.owner == w
+       and e.selection == sel_atom):
+    client = e.requestor
+    client_prop = e.target if e.property == X.NONE else e.property
+
+    if e.target == targets_atom:
+     prop_value = (targets_atom,) + tuple(types.keys())
+     prop_type = Xatom.ATOM
+     prop_format = 32
+    elif e.target in types:
+     prop_value = types[e.target]
+     prop_type = e.target
+     prop_format = 8
+    else:
+     client_prop = X.NONE
+
+    if client_prop != X.NONE:
+     client.change_property(client_prop, prop_type, prop_format, prop_value)
+
+    ev = Xevent.SelectionNotify(
+          time = e.time,
+          requestor = e.requestor,
+          selection = e.selection,
+          target = e.target,
+          property = client_prop)
+    client.send_event(ev)
+
+   elif (e.type == X.SelectionClear
+         and e.window == w
+         and e.atom == sel_atom):
+    break
+
+ finally:
+  d.close()
+
+def put_selection(data, sel_name):
+ t = threading.Thread(
+     target = put_th,
+     args = (data, sel_name),
+     daemon = True)
+ t.start()
+
+def get_selection(sel_name, fmt_name='UTF8_STRING'):
+
+ def toObj(d, p):
+  if p.property_type == d.get_atom('STRING'):
+   return p.value.decode('iso-8859-1')
+  if p.property_type == d.get_atom('UTF8_STRING'):
+   return p.value.decode('utf8')
+  return None
+
+ d = Xdisplay.Display()
+ try:
+
+  sel_atom = d.get_atom(sel_name)
+  fmt_atom = d.get_atom(fmt_name)
+  prop_atom = d.get_atom('XSEL_DATA')
+  incr_atom = d.get_atom('INCR')
+  w = d.screen().root.create_window(-10, -10, 1, 1, 0, X.CopyFromParent)
+  w.set_wm_name(f'Android {sel_name} clipboard copy helper')
+  w.convert_selection(sel_atom, fmt_atom, prop_atom, X.CurrentTime)
+  while True:
+   e = d.next_event()
+   if e.type == X.SelectionNotify and e.selection == sel_atom:
+    break
+  if e.property == X.NONE:
+   return None
+  p = w.get_property(prop_atom, X.AnyPropertyType, 0, 2**31-1, 1)
+  if p.property_type == incr_atom:
+   return None
+  return toObj(d, p)
+
+ finally:
+  d.close()
+
+def wlSend(sock, obj, method, *args):
+ def wlSer(v):
+  if isinstance(v, int):
+   return v.to_bytes(4, sys.byteorder)
+  elif isinstance(v, str):
+   b = v.encode('utf8') + b'\x00'
+   p = len(b) & 3
+   if p != 0:
+    b += '\x00' * (4 - p)
+   return b
+ p = b''.join((wlSer(arg) for arg in args))
+ sock.sendall(obj.to_bytes(4, sys.byteorder) +
+  (method | ((len(p) + 8) << 16)).to_bytes(4, sys.byteorder) + p)
+
+def sendClipboard(sock, v):
+ def serTag(v):
+  return v.to_bytes(4, 'big')
+ def serStr(v):
+  b = v.encode('utf8')
+  return len(b).to_bytes(4, 'big') + b
+ if isinstance(v, str):
+  sock.sendall(serTag(1) + serStr('text/plain; charset=utf8') + serStr(v))
+ else:
+  raise Exception('Unsupported type')
+
+def recvAll(sock, l):
+ b = []
+ while l > 0:
+  s = sock.recv(l)
+  if len(s) <= 0:
+   raise Exception('Disconnected')
+  l -= len(s)
+  b.append(s)
+ return b''.join(b)
+
+def recvBytes(sock):
+ l = int.from_bytes(recvAll(sock, 4), 'big')
+ return recvAll(sock, l)
+
+def connect(addr):
+ sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+ sock.connect(addr)
+ return sock
+
+def parseContentType(v):
+ p = re.compile(r'^(.*?)/(.*?)(?:;\s*charset=(.+?)?)$', re.I)
+ m = p.match(v)
+ if m is None:
+  return None
+ return (m[1], m[2], m[3])
+
+def str2X(v):
+ log(f"IM: {v}")
+ try:
+  r = subprocess.run(('xdotool', 'type', v), capture_output=True, text=True)
+ except:
+  log(f"IM failed: {sys.exc_info()[1]}")
+ else:
+  log(r.stderr)
+
+def main():
+ if len(sys.argv)!=2:
+  sys.exit('\nUsage: %s <auth-token>\n\n' % sys.argv[0])
+ token = sys.argv[1]
+ log("Starting...")
+ sock = connect(wl_sock)
+ wlSend(sock, wl_helper_obj_id, 1, uuid.UUID(hex=token).int & ((1<<32)-1), 0)
+ while True:
+  tag = int.from_bytes(recvAll(sock, 4), 'big')
+  log(f"Tag: {tag}")
+  if tag == 0x01:
+   mimeStr = recvBytes(sock).decode('utf8')
+   mime = parseContentType(mimeStr)
+   data = recvBytes(sock)
+   if mime is None:
+    log(f"Bad mime: {mimeStr}")
+   elif mime[0:2] == ('text', 'plain') and mime[2] is not None:
+    try:
+     text = data.decode(mime[2]).encode('utf8')
+    except:
+     log(f"Bad charset in mime: {mimeStr}")
+     continue
+    put_selection({'UTF8_STRING':text}, 'CLIPBOARD')
+    put_selection({'UTF8_STRING':text}, 'PRIMARY')
+   else:
+    log(f"Mime not supported: {mimeStr}")
+  elif tag == 0x03:
+   mimeStr = recvBytes(sock).decode('utf8')
+   text = get_selection('CLIPBOARD')
+   sendClipboard(sock, "" if text is None else text)
+  elif tag == 0x11:
+   text = recvBytes(sock).decode('utf8')
+   str2X(text)
+  else:
+   raise Exception('Hmm...')
+ log("Exiting...")
+
+if __name__ == '__main__':
+ try:
+  main()
+ except:
+  log(f"Error: {sys.exc_info()[1]}")

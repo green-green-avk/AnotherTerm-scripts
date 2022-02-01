@@ -1,0 +1,75 @@
+#!/usr/bin/python3
+
+import socket
+import os
+import sys
+import signal
+import subprocess
+import uuid
+
+wl_sock = "\0" + os.environ["APP_ID"] + ".wlterm"
+
+wl_helper_obj_id = 2
+
+res_uuid = uuid.uuid4().hex
+res_auth = uuid.uuid4().hex
+
+def wlSend(sock, obj, method, *args):
+ def wlSer(v):
+  if isinstance(v, int):
+   return v.to_bytes(4, sys.byteorder)
+  elif isinstance(v, str):
+   b = v.encode('utf8') + b'\x00'
+   p = len(b) & 3
+   if p != 0:
+    b += '\x00' * (4 - p)
+   return b
+ p = b''.join((wlSer(arg) for arg in args))
+ sock.sendall(obj.to_bytes(4, sys.byteorder) +
+  (method | ((len(p) + 8) << 16)).to_bytes(4, sys.byteorder) + p)
+
+def connect(addr):
+ sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+ sock.connect(addr)
+ return sock
+
+def onSignal(sig, fr):
+ global proc
+ if proc is not None:
+  proc.terminate()
+ exit(0)
+
+sock = connect(wl_sock)
+
+wlSend(sock, wl_helper_obj_id, 0, uuid.UUID(hex=res_auth).int & ((1<<32)-1))
+
+proc = None
+
+for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGQUIT, signal.SIGPIPE):
+ signal.signal(sig, onSignal)
+
+os.environ["WAYLAND_SOCKET"] = str(sock.fileno())
+#os.environ["WAYLAND_DEBUG"] = "1"
+os.environ["XDG_RUNTIME_DIR"] = "/home/my_acct"
+os.environ["LD_PRELOAD"] = "/opt/shm/lib/libwrapdroid-shm-sysv.so"
+os.environ["LIBWRAPDROID_SOCKET_NAME"] = os.environ["APP_ID"] + ".reswrap." + res_uuid
+os.environ["LIBWRAPDROID_AUTH_KEY"] = res_auth
+
+dispFdOut, dispFd = os.pipe()
+ttyFd = os.open("/dev/tty", os.O_RDWR, 0o777)
+
+proc = subprocess.Popen(("Xwayland", "-ac", "-shm", #"-listen", "tcp", "-listen", "unix", "-listen", "local", "-listen", "abstract",
+ "-displayfd", str(dispFd), "-noreset"),
+ pass_fds=(sock.fileno(), dispFd), stdin=ttyFd, stdout=ttyFd, stderr=ttyFd)
+
+os.close(ttyFd)
+os.close(dispFd)
+sock.close()
+
+print(proc.pid, flush=True)
+print(res_uuid, flush=True)
+print(res_auth, flush=True)
+with os.fdopen(dispFdOut) as f:
+ print(f.readline().strip(), flush=True)
+
+proc.wait()
