@@ -21,7 +21,7 @@ echo '  ROOTFS_URL - override root FS source URL'
 }
 ###
 
-# We can't simply use `()' to introduce newly exported TMPDIR to the shell in Android 10.
+# We can't simply use `()' to introduce a newly exported TMPDIR to the shell in Android 10.
 _TMPDIR="$DATA_DIR/tmp"
 if [ "$_TMPDIR" != "$TMPDIR" ] ; then
 export TMPDIR="$_TMPDIR"
