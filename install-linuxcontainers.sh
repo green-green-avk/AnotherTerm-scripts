@@ -7,9 +7,10 @@ set -e
 ###
 show_usage() {
 echo 'Usage:'
-echo "	$0 [-a] [-d] <distro> <release> [<target_subdir_name>]"
-echo '		-a -- non-interactive mode'
-echo '		-d -- do not use minitar and PRoot from a plugin if present'
+echo "  $0 [-a] [-d] [-e] [--] <distro> <release> [<target_subdir_name>]"
+echo '    -a -- non-interactive mode'
+echo '    -d -- do not use minitar and PRoot from a plugin if present'
+echo '    -e -- fail if no minitar or PRoot from a plugin are present'
 echo
 echo 'Variables:'
 echo '  REG_USER - user account name; default:' "$REG_USER"
@@ -36,6 +37,11 @@ trap 'exit 1' INT HUP QUIT TERM ALRM USR1
 
 TERMSH="$LIB_DIR/libtermsh.so"
 
+exit_with() {
+echo "$@" >&2
+exit 1
+}
+
 # === Locale ===
 if [ -z "$LANG" ] ; then
   export LANG='en_US.UTF-8'
@@ -47,12 +53,18 @@ else
 fi
 # ===        ===
 
-if [ "$1" = '-a' ] ; then
-NI=1
-shift
-else
-NI=
-fi
+NI= # Non-interactive
+UP= # Essentials plugin: force / no
+while true ; do
+case "$1" in
+--) shift ; break ;;
+-a) shift ; NI=1 ;;
+-d) shift ; UP='no' ;;
+-e) shift ; UP='force' ;;
+-*) exit_with "Bad argument: $1" ;;
+*) break ;;
+esac
+done
 
 DISTRO="$1"
 RELEASE="$2"
@@ -76,11 +88,6 @@ $1*) echo "$L" ; return 0 ;;
 esac
 done
 return 1
-}
-
-exit_with() {
-echo "$@" >&2
-exit 1
 }
 
 prompt() {
@@ -251,8 +258,10 @@ OO="$([ -t 2 ] && echo --progress)"
 
 
 # = Essentials =
-if E_MINITAR="$("$TERMSH" plugin "$ESSENTIALS" minitar)" 2>/dev/null
+if [ "$UP" != 'no' ] && E_MINITAR="$("$TERMSH" plugin "$ESSENTIALS" minitar)" 2>/dev/null
 then MINITAR="$E_MINITAR"
+elif [ "$UP" = 'force' ]
+then exit_with 'No minitar in the essentials plugin found'
 # ==============
 else
 
@@ -267,10 +276,12 @@ fi
 
 
 # = Essentials =
-if E_PROOT="$("$TERMSH" plugin "$ESSENTIALS" proot)" 2>/dev/null
+if [ "$UP" != 'no' ] && E_PROOT="$("$TERMSH" plugin "$ESSENTIALS" proot)" 2>/dev/null
 then
 PROOT="\$(\"\$TERMSH\" plugin '$ESSENTIALS' proot)"
 PROOT_USERLAND="\$(\"\$TERMSH\" plugin '$ESSENTIALS' proot-userland)" || true
+elif [ "$UP" = 'force' ]
+then exit_with 'No proot in the essentials plugin found'
 # ==============
 else
 
