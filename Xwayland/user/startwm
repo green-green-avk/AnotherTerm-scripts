@@ -10,6 +10,7 @@ WRAPDROID_PID=$!
 /opt/Xutils/bin/wl-helper "$RES_AUTH" &
 WLHELPER_PID=$!
 
+termsh show-XWL-session "0x${RES_AUTH: -8}" # Switch to the graphic terminal window
 LD_PRELOAD=/opt/shm/lib/libwrapdroid-shm-sysv.so:/opt/shm/lib/libwrapdroid-shm-posix.so "$WM"
 
 killall -wq gpg-agent ssh-agent xscreensaver xiccd
