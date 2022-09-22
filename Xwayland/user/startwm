@@ -1,7 +1,7 @@
 #!/bin/bash
 
-WM=startxfce4
-#WM=icewm
+#WM=startxfce4
+WM=icewm
 
 export LIBWRAPDROID_SOCKET_NAME="$APP_ID.reswrap.$RES_UUID"
 export LIBWRAPDROID_AUTH_KEY="$RES_AUTH"
