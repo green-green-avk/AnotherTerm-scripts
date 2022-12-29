@@ -15,7 +15,8 @@ Under your prooted environment:
   * `xdotool`
 
 * Make sure that you have installed [**libwrapdroid**](https://github.com/green-green-avk/libwrapdroid);
-  <br/>*See description [here](https://green-green-avk.github.io/AnotherTerm-docs/installing-linux-apis-emulation-for-nonrooted-android.html#main_content)*
+  <br/>*See description [here](https://green-green-avk.github.io/AnotherTerm-docs/installing-linux-apis-emulation-for-nonrooted-android.html#main_content)
+  and let these scripts to take care of the **libwrapdroid** environment and server startup*
 
 * Put scripts from `root` into `/root`;
 
