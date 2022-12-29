@@ -14,6 +14,9 @@ Under your prooted environment:
   * `Xlib` module for `python3`
   * `xdotool`
 
+* Make sure that you have installed [**libwrapdroid**](https://github.com/green-green-avk/libwrapdroid);
+  <br/>*See description [here](https://green-green-avk.github.io/AnotherTerm-docs/installing-linux-apis-emulation-for-nonrooted-android.html#main_content)*
+
 * Put scripts from `root` into `/root`;
 
 * Put scripts from `user` into `/home/<your_acct>`;
