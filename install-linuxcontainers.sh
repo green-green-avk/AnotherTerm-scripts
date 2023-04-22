@@ -404,6 +404,11 @@ nameserver 8.8.8.8
 nameserver 8.8.4.4
 EOF
 
+cat <<EOF > etc/profile.d/fix-env.sh
+# We have no systemd here; so just in case of Debian at least.
+[ -L '/var/lock' -a ! -e '/var/lock' ] && mkdir -p "\$(readlink -m '/var/lock')" || true
+EOF
+
 cat << EOF > etc/profile.d/locale.sh
 if [ -f /etc/default/locale ]
 then
