@@ -89,6 +89,7 @@ inc "$CFG_DIR/run.rc"
 "$PROOT_F" -r "$BASE_DIR/root" $UG \
 -b /dev -b /proc -b /sys -b /system -b /vendor -b /storage \
 $([ -d /apex ] && echo -b /apex ) \
+$([ -f /linkerconfig/ld.config.txt ] && echo -b /linkerconfig/ld.config.txt ) \
 -b "$LIB_DIR/libtermsh.so:/bin/_termsh" \
 "${PROOT_OPT_ARGS[@]}" \
 --link2symlink -p -L --tcsetsf2tcsets \
