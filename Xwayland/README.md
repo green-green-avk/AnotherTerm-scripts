@@ -4,7 +4,7 @@ Details: <https://green-green-avk.github.io/AnotherTerm-docs/graphical-sessions.
 
 ## Usage
 
-Minimal Another&nbsp;Term version: [<kbd>MkIV-dev16</kbd>](https://github.com/green-green-avk/AnotherTerm/releases/tag/MkIV_dev16_release)
+Minimal Another&nbsp;Term version: [<kbd>MkIV-dev24</kbd>](https://github.com/green-green-avk/AnotherTerm/releases/tag/MkIV_dev24_release)
 
 Under your prooted environment:
 
